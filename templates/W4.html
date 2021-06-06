@@ -1,0 +1,89 @@
+{% extends "layout.html" %}
+{% block content %}
+<!--
+{% if message=="E1" %}
+<script>alert("名称は「256文字以下」にしてください")</script>
+{%elif message=="E2"%}
+<script>alert("日付は「YYYY/MM/DD hh:mm」の形式で入力してください")</script>
+{% endif %}
+-->
+<div class="text-center bg-primary">
+  <h3 class="W4">予定編集画面</h3>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+
+
+<div class="plan">
+  <form method="POST" class=plan-form enctype="multipart/form-data">
+    <div class="plans" id="plans">
+      <div class="plan-info" id="plan-info">
+        <div class="col-sm-3 text-center">
+          <label for="start">開始時刻</label>
+          <input type=datetime-local id="start" name="start" class="start form-control">
+        </div>
+
+        <div class="col-sm-3 text-center">
+          <label for="end">終了時刻</label>
+          <input type="datetime-local" id="end" name="end" class="end form-control">
+        </div>
+
+        <div class="col-sm-4 text-center">
+          <label for="plan-name">予定名</label>
+          <input type="text" id="plan-name" name="plan-name" class="plan-name form-control">
+        </div>
+
+        <div class="col-sm-1">
+          <label>　</label>
+          <input type="button" name="decide" class="decide form-control btn-primary" value="決定" id="decide">
+        </div>
+
+        <div class="col-sm-1">
+          <label>　</label>
+          <input type="button" name="del" class="del form-control" value="削除" id="del">
+        </div>
+
+        <div>
+          <input type="hidden" name="id" id="id">
+        </div>
+      </div>
+    </div>
+    <div class="text-center">
+      <input type="button" name="add" value="追加" id="add" class="btn-lg btn-primary">
+    </div>
+    <div class="text-center">
+      <p></p>
+      <input type="submit" name="send" value="戻る" class="btn-lg">
+    </div>
+  </form>
+</div>
+
+
+<!--既に予定がある時-->
+{% if existedPlans %}
+{% for plan in existedPlans[::-1] %}
+<script type="text/javascript">
+  var clone = $("#plan-info").clone(true); //plan-info class clone
+  clone
+    .find("#start")
+    .val("{{plan['start']}}")
+  clone
+    .find("#end")
+    .val("{{plan['end']}}")
+  clone
+    .find("#plan-name")
+    .val("{{plan['title']}}")
+  clone
+    .find("#id")
+    .val("{{plan['id']}}")
+
+  clone.insertBefore($("#plan-info"))
+</script>
+{% endfor %}
+{% endif %}
+
+<!--欄追加削除処理-->
+<script src="../static/js/planAddDelDecide.js"></script>
+
+{% endblock %}

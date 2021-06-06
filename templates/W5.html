@@ -1,0 +1,91 @@
+{% extends "layout.html" %}
+{% block content %}
+<!--
+{% if message=="E3" %}
+<script>alert("必要時間は「4桁以下の整数」にしてください")</script>
+{%elif message=="E4"%}
+<script>alert("名称は「256文字以下」にしてください")</script>
+{%elif message=="E5"%}
+<script>alert("日付は「YYYY/MM/DD hh:mm」の形式で入力してください")</script>
+{% endif %}
+-->
+<div class="text-center bg-primary">
+  <h3 class="W5">課題編集画面</h3>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+
+
+<div class="task">
+  <form method="POST" class=task-form enctype="multipart/form-data">
+    <div class="tasks" id="tasks">
+      <div class="task-info" id="task-info">
+        <div class="col-sm-3 text-center">
+          <label for="due">締切日</label>
+          <input type=datetime-local id="due" name="due" class="due form-control">
+        </div>
+
+        <div class="col-sm-3 text-center">
+          <label for="need">必要時間</label>
+          <input type="number" id="need" name="need" class="need form-control">
+        </div>
+
+        <div class="col-sm-4 text-center">
+          <label for="task-name">課題名</label>
+          <input type="text" id="task-name" name="task-name" class="task-name form-control">
+        </div>
+
+        <div class="col-sm-1">
+          <label>　</label>
+          <input type="button" name="decide" class="decide form-control btn-primary" value="決定" id="decide">
+        </div>
+
+        <div class="col-sm-1">
+          <label>　</label>
+          <input type="button" name="del" class="del form-control" value="削除" id="del">
+        </div>
+
+        <div>
+          <input type="hidden" name="id" id="id">
+        </div>
+      </div>
+    </div>
+    <div class="text-center">
+      <input type="button" name="add" value="追加" id="add" class="btn-lg btn-primary">
+    </div>
+    <div class="text-center">
+      <p></p>
+      <input type="submit" name="send" value="戻る" class="btn-lg">
+    </div>
+  </form>
+</div>
+
+
+<!--既に予定がある時-->
+{% if existedTasks %}
+{% for task in existedTasks[::-1] %}
+<script type="text/javascript">
+  var clone = $("#task-info").clone(true); //task-info class clone
+  clone
+    .find("#due")
+    .val("{{task['due']}}")
+  clone
+    .find("#need")
+    .val("{{task['need']}}")
+  clone
+    .find("#task-name")
+    .val("{{task['title']}}")
+  clone
+    .find("#id")
+    .val("{{task['id']}}")
+
+  clone.insertBefore($("#task-info"))
+</script>
+{% endfor %}
+{% endif %}
+
+<!--欄追加削除処理-->
+<script src="../static/js/taskAddDelDecide.js"></script>
+
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+{% block content %}
+<h3 class="hi">Hello</h3>
+
+<div class="container">
+  <h2>Button Pressed:</h2>
+  <form method="POST">
+    <input type="submit" name="send" value="W1">
+    <input type="submit" name="send" value="W2">
+    <input type="submit" name="send" value="W3">
+    <input type="submit" name="send" value="W4">
+    <input type="submit" name="send" value="W5">
+    <input type="submit" name="send" value="W6">
+    <input type="submit" name="send" value="putfunc">
+  </form>
+</div>
+
+{% endblock %}
+
+<!- こんにちは。{{ name }}さん。 {% for x in posts %} {{x}} {% endfor %} ->
+
+  <div class="rows">
+    <form action="" method="">
+      <input type="text" name="text[]" class="text">
+      <button type="button" class="btn-clone">追加</button>
+      <button type="button" class="btn-remove">削除</button>
+      <button type="submit"></button>
+    </form>
+  </div>

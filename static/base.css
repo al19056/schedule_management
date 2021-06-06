@@ -1,0 +1,11 @@
+.hi{
+  color:#f00;
+}
+
+input,button{
+  display: block;
+}
+
+.btn-remove{
+  display: none;;
+}
