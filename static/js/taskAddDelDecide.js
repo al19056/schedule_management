@@ -90,7 +90,7 @@ $(document).on("click", "#decide", function () {
       alert("正しい値を入力してください")
       return;
     }
-    var resStr = "{'due':'" + due + "','need':'" + need + "','title':'" + taskName + "','id':'" + id + "'}"
+    var resStr = "{'due':'" + due + "','need':'" + need + "','title':'" + taskName + "','taskID':'" + id + "'}"
     $.post('/task/edit', resStr)
       .done(function (data) {
         if (data == 'success update') {

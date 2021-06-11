@@ -90,7 +90,7 @@ $(document).on("click", "#decide", function () {
       alert("正しい値を入力してください")
       return;
     }
-    var resStr = "{'start':'" + start + "','end':'" + end + "','title':'" + planName + "','id':'" + id + "'}"
+    var resStr = "{'start':'" + start + "','end':'" + end + "','title':'" + planName + "','planID':'" + id + "'}"
     $.post('/plan/edit', resStr)
       .done(function (data) {
         if (data == 'success update') {
