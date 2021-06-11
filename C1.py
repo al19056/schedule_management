@@ -229,9 +229,7 @@ def mustDo(userID, orderDate, restTime):
             return
         # リストの最後の課題が処理日よりも前にある時
         if taskList[-1]["due"] < targetDay:
-            targetDay = datetime.datetime.strptime(targetDay, "%Y-%m-%d")
-            targetDay -= datetime.timedelta(days=1)
-            targetDay = targetDay.isoformat()[:10]
+            targetDay = taskList[-1]["due"][:10]
             return
 
         # 課題をする時間が残っているとき
