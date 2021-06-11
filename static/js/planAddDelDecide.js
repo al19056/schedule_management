@@ -49,7 +49,7 @@ $(document).on("click", ".del", function () {
   //idがあるとき(登録済みの予定を削除)
   if (id != "") {
     //削除するidをpost
-    $.post('/plan/edit', '{"start":"","end":"","title":"","id":"' + id + '"}')
+    $.post('/plan/edit', '{"start":"","end":"","title":"","planID":"' + id + '"}')
       .done(function (data) {
         if (data == "success del") {
           alert("予定の削除に成功しました")

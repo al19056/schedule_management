@@ -49,7 +49,7 @@ $(document).on("click", ".del", function () {
   //idがあるとき(登録済みの課題を削除)
   if (id != "") {
     //削除するidをpost
-    $.post('/task/edit', '{"due":"","need":"","title":"","id":"' + id + '"}')
+    $.post('/task/edit', '{"due":"","need":"","title":"","taskID":"' + id + '"}')
       .done(function (data) {
         if (data == "success del") {
           alert("課題の削除に成功しました")
