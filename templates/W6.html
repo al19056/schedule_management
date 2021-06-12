@@ -1,14 +1,5 @@
 {% extends "layout.html" %}
 {% block content %}
-<!--
-{% if message=="E6" %}
-<script>alert("必要時間は「4桁以下の整数」にしてください")</script>
-{%elif message=="E7"%}
-<script>alert("名称は「256文字以下」にしてください")</script>
-{%elif message=="E8"%}
-<script>alert("日付は「YYYY/MM/DD hh:mm」の形式で入力してください")</script>
-{% endif %}
--->
 <div class="text-center bg-primary">
   <h3 class="W5">課題追加画面</h3>
 </div>
@@ -47,7 +38,7 @@
         </div>
 
         <div>
-          <input type="hidden" name="id" id="id">
+          <input type="hidden" name="taskID" id="taskID">
         </div>
       </div>
     </div>
@@ -77,7 +68,7 @@
     .find("#task-name")
     .val("{{task['title']}}")
   clone
-    .find("#id")
+    .find("#taskID")
     .val("{{task['taskID']}}")
 
   clone.insertBefore($("#task-info"))

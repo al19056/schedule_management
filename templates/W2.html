@@ -1,4 +1,53 @@
 {% extends "layout.html" %}
 {% block content %}
+
+<link rel='stylesheet' href='../static/lib/main.css' />
+<script src='../static/lib/main.js'></script>
+<style>
+  th.fc-day-sat {
+    background-color: #eaf4ff;
+  }
+
+  th.fc-day-sun {
+    background-color: #ffeaea;
+  }
+
+  td.fc-day-sat {
+    background-color: #eaf4ff;
+  }
+
+  td.fc-day-sun {
+    background-color: #ffeaea;
+  }
+</style>
+<script>
+
+  document.addEventListener('DOMContentLoaded', function () {
+    var calendarEl = document.getElementById('calendar');
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+      locale: 'ja',
+      //height: 'auto',
+      headerToolbar: {
+        left: "prev",//"dayGridMonth,listMonth",
+        center: "title",
+        right: "today next"
+      },
+      buttonText: {
+        today: '今月',
+        month: '月',
+        list: 'リスト'
+      },
+      dayCellContent: function (e) {
+        e.dayNumberText = e.dayNumberText.replace('日', '');
+      },
+      businessHours: false
+    });
+    calendar.render();
+  });
+
+</script>
+<div id="calendar" class="col-sm-8"></div>
+</script>
+
 <h3 class="hi">W2</h3>
 {% endblock %}

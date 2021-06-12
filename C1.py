@@ -1,14 +1,15 @@
+#####################################################
+###***Designer:山川
+###***Date:2021.6.11
+###***Purpose:C1コンポーネント(サーバサイドの関数のみ)
+#####################################################
 import C2
 import C3
 import C4
 from flask import redirect, session, url_for
 import datetime
 
-#########################################
-###***Designer:山川
-###***Date:2021.6.10
-###***Purpose:ログイン要求モジュール
-#########################################
+# M1-1 ログイン処理モジュール
 def requestLogin(userID, password):
     """
     C2認証処理部にログインを要求をし、結果によって画面遷移やCookieへの値の追加を行う
@@ -22,11 +23,12 @@ def requestLogin(userID, password):
           'failed':W1ログイン画面で再入力要求アラートを表示
 
         成功時:
+          Cookieへログイン情報を保存
           homeへリダイレクトし、W2初期画面を表示する
     """
-    result = C2.AuthenticationProcessing(userID, password)
+    result = C2.authenticationProcessing(userID, password)
     # ログイン失敗
-    if result == 0:
+    if result == "failed":
         return "failed"
     # ログイン成功
     else:
@@ -36,17 +38,46 @@ def requestLogin(userID, password):
         return redirect(url_for("home"))
 
 
-#########################################
-###***Designer:山川
-###***Date:2021.6.11
-###***Purpose:予定情報問い合わせモジュール
-#########################################
+# M1-2 ユーザ登録処理モジュール
+def requestAddUser(userID, password):
+    """
+    C2認証処理部にユーザ登録を要求をし、結果によって画面遷移やCookieへの値の追加を行う
+
+      引数:
+        userID   (str):W1ログイン画面からPOSTされたemailフィールド
+        password (str):W1ログイン画面からPOSTされたpasswordフィールド
+
+      戻り値:
+        失敗時:
+          'failed':W1ログイン画面で再入力要求アラートを表示
+
+        成功時:
+          Cookieへログイン情報を保存
+          homeへリダイレクトし、W2初期画面を表示する
+    """
+    result = C2.addUser(userID, password)
+    if result == "existed":
+        return "このIDはすでに登録済みです。正しいパスワードを入力してください。"
+    # ログイン失敗
+    elif result == "failed":
+        return "failed"
+    # ログイン成功
+    else:
+        session["userID"] = userID
+        session["password"] = password
+        session["status"] = "True"
+        return redirect(url_for("home"))
+
+
+# M1-3 予定情報問い合わせ処理モジュール
 def planQuery(userID, orderDate, many):
     """
     C3予定処理部に予定情報の要求を行い、結果を返す
 
       引数:
-        orderDate (str):要求年月日 YYYY-MM-DDの形式
+        userID    (str)    :ユーザのID
+        orderDate (str)    :要求年月日 YYYY-MM-DDの形式
+        many      (boolean):指定日以降のデータも含むかどうか
 
       戻り値:
         dataList (list):予定情報の入ったリスト(予定情報は辞書形式)
@@ -59,11 +90,7 @@ def planQuery(userID, orderDate, many):
     return dataList
 
 
-#########################################
-###***Designer:山川
-###***Date:2021.6.10
-###***Purpose:予定情報更新モジュール
-#########################################
+# M1-4 予定情報編集処理モジュール
 def planEdit(userID, start, end, title, planID):
     """
     C3予定処理部に予定情報の更新要求を行い、結果を返す
@@ -98,17 +125,15 @@ def planEdit(userID, start, end, title, planID):
         return "success update"
 
 
-#########################################
-###***Designer:山川
-###***Date:2021.6.11
-###***Purpose:課題情報問い合わせモジュール
-#########################################
+# M1-5 課題情報問い合わせ処理モジュール
 def taskQuery(userID, orderDate, many):
     """
     C4課題処理部に課題情報の要求を行い、結果を返す
 
       引数:
-        orderDate (str):要求年月日 YYYY-MM-DDの形式
+      　userID    (str)    :ユーザのID
+        orderDate (str)    :要求年月日 YYYY-MM-DDの形式
+        many      (boolean):指定日以降のデータも含むかどうか
 
       戻り値:
         dataList (list):課題情報の入ったリスト(課題情報は辞書形式)
@@ -122,11 +147,7 @@ def taskQuery(userID, orderDate, many):
     return dataList
 
 
-#########################################
-###***Designer:山川
-###***Date:2021.6.10
-###***Purpose:課題情報更新モジュール
-#########################################
+# M1-6 課題情報編集処理モジュール
 def taskEdit(userID, due, need, title, taskID):
     """
     C4課題処理部に課題情報の更新要求を行い、結果を返す
@@ -146,7 +167,7 @@ def taskEdit(userID, due, need, title, taskID):
           更新:'success update'
           追加:newID C4から返された新たに作成された予定ID
     """
-    newID = C4.planEdit(userID, due, need, title, taskID)
+    newID = C4.taskEdit(userID, due, need, title, taskID)
     # 失敗時
     if newID == "failed":
         return "failed"
@@ -161,11 +182,7 @@ def taskEdit(userID, due, need, title, taskID):
         return "success update"
 
 
-#########################################
-###***Designer:山川
-###***Date:2021.6.11
-###***Purpose:mustDoリスト作成モジュール
-#########################################
+# M1-7 mustDoリスト作成処理モジュール
 def mustDo(userID, orderDate, restTime):
     """
     機能概要:
@@ -191,9 +208,9 @@ def mustDo(userID, orderDate, restTime):
 
     if len(taskList) == 0:
         return []
-
+    restTime = float(restTime)
     restTimeMin = (
-        int(restTime) * 60 + (float(restTime) - int(restTime)) * 60
+        int(restTime) * 60 + (restTime - int(restTime)) * 60
     )  # restTimeを分変換(例:2.5時間->150分)
     canDoTime = 24 * 60 - restTimeMin  # 一日に課題を可能な時間(分)
 

@@ -1,12 +1,5 @@
 {% extends "layout.html" %}
 {% block content %}
-<!--
-{% if message=="E1" %}
-<script>alert("名称は「256文字以下」にしてください")</script>
-{%elif message=="E2"%}
-<script>alert("日付は「YYYY/MM/DD hh:mm」の形式で入力してください")</script>
-{% endif %}
--->
 <div class="text-center bg-primary">
   <h3 class="W4">予定編集画面</h3>
 </div>
@@ -45,7 +38,7 @@
         </div>
 
         <div>
-          <input type="hidden" name="id" id="id">
+          <input type="hidden" name="planID" id="planID">
         </div>
       </div>
     </div>
@@ -75,7 +68,7 @@
     .find("#plan-name")
     .val("{{plan['title']}}")
   clone
-    .find("#id")
+    .find("#planID")
     .val("{{plan['planID']}}")
 
   clone.insertBefore($("#plan-info"))

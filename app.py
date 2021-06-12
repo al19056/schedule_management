@@ -3,22 +3,51 @@
 ***Date:2021.6.6
 ***Purpose:サーバー側プログラム
 """
-from flask import Flask, render_template, url_for, flash, redirect, request  # 追加
+from flask import (
+    Flask,
+    render_template,
+    url_for,
+    flash,
+    redirect,
+    request,
+    session,
+)  # 追加
 import ast
 import json
+import os
 import C1
 
 app = Flask(__name__)
 page = "W1"
+app.secret_key = os.urandom(16)
+
+# テスト用
+@app.route("/test")
+def test():
+    session["userID"] = "123456"
+    session["password"] = "qwerty"
+    session["status"] = "True"
+    session["restTime"] = "7"
+    return redirect(url_for("home"))
 
 
-@app.route("/", methods=["GET", "POST"])
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "GET":
+        return render_template("W1.html")
+    else:
+        return C1.requestLogin(request.form.get("email"), request.form.get("password"))
+
+
+@app.route("/login/addUser", methods=["POST"])
+def addUser():
+    return C1.requestAddUser(request.form.get("email"), request.form.get("password"))
+
+
+@app.route("/home", methods=["GET", "POST"])
 def home():
     """
     機能概要
-        テスト用です
-        W1,2,3,4,5,6へ遷移できるボタンがあります
-        putfuncボタンは遷移先を指定してないのでエラーがでます
     """
     title = "home"
 
@@ -40,13 +69,13 @@ def home():
                         "start": "2021-06-10T15:37",
                         "end": "2021-07-10T15:01",
                         "title": "test1",
-                        "id": "111fd1111",
+                        "planID": "111fd1111",
                     },
                     {
                         "start": "2022-06-10T15:37",
                         "end": "2022-07-10T15:01",
                         "title": "test2",
-                        "id": "22222222",
+                        "planID": "22222222",
                     },
                 ],
                 existedTasks=[  # 既に存在している課題
@@ -54,13 +83,13 @@ def home():
                         "due": "2021-06-10T15:37",
                         "need": "7",
                         "title": "test1",
-                        "id": "111fd1111",
+                        "taskID": "111fd1111",
                     },
                     {
                         "due": "2022-06-10T15:37",
                         "need": "4",
                         "title": "test2",
-                        "id": "22222222",
+                        "taskID": "22222222",
                     },
                 ],
             )
@@ -68,8 +97,8 @@ def home():
             return render_template("home.html")
 
 
-# postは{"start":"・・・", "end":"・・・", "title":"・・・", "id":"・・・"}の形
-@app.route("/plan/edit", methods=["GET", "POST"])
+# postは{"start":"・・・", "end":"・・・", "title":"・・・", "planID":"・・・"}の形
+@app.route("/plan/edit", methods=["POST"])
 def planEdit():
     """
     機能概要:
@@ -79,6 +108,7 @@ def planEdit():
             引数:
                 クライアント側から{"start":"・・・", "end":"・・・", "title":"・・・", "id":"・・・"}
                 の形でバイト列が送られてくる
+                時間はYYYY-MM-DDThh:mmの形
 
             戻り値:
                 更新成功:
@@ -87,38 +117,25 @@ def planEdit():
                         更新時:'success update'
                     更新失敗時:'failed'
     """
-    # url直打ち込み回避
-    if request.method == "GET":
-        return redirect(url_for("home"))
 
     resStr = request.get_data()  # postされたバイト文字列
     resStr = resStr.decode()  # バイト文字列を文字列に変換
     resStr = resStr.replace("'", '"')
     resDict = json.loads(resStr)  # 辞書へ変換
 
-    # 更新成功:ID, 失敗:'Failed'が返される
+    # 更新成功:newID, 失敗:'failed'が返される
     result = C1.planEdit(
-        resDict["start"], resDict["end"], resDict["title"], resDict["id"]
+        session["userID"],
+        resDict["start"],
+        resDict["end"],
+        resDict["title"],
+        resDict["planID"],
     )
-    # 更新成功
-    if result != "Failed":
-        # 追加処理の時
-        if resDict["id"] == "":
-            return result  # かぶりがないIDを作る関数が必要
-        else:
-            # 削除処理の時
-            if resDict["start"] == "":
-                return "success del"
-            # 更新処理の時
-            else:
-                return "success update"
-    # 更新失敗
-    else:
-        return "failed"
+    return result
 
 
-# postは{"due":"・・・", "need":"・・・", "title":"・・・", "id":"・・・"}の形
-@app.route("/task/edit", methods=["GET", "POST"])
+# postは{"due":"・・・", "need":"・・・", "title":"・・・", "taskID":"・・・"}の形
+@app.route("/task/edit", methods=["POST"])
 def taskEdit():
     """
     機能概要:
@@ -128,6 +145,7 @@ def taskEdit():
             引数:
                 クライアント側から{"due":"・・・", "need":"・・・", "title":"・・・", "id":"・・・"}
                 の形でバイト列が送られてくる
+                時間はYYYY-MM-DDThh:mmの形
 
             戻り値:
                 更新成功:
@@ -136,38 +154,25 @@ def taskEdit():
                         更新時:'success update'
                     更新失敗時:'failed'
     """
-    # url直打ち込み回避
-    if request.method == "GET":
-        return redirect(url_for("home"))
 
     resStr = request.get_data()
     resStr = resStr.decode()
     resStr = resStr.replace("'", '"')
     resDict = json.loads(resStr)
-
-    # 更新成功:ID, 失敗:'Failed'が返される
+    print(resDict)
+    # 更新成功:newID, 失敗:'failed'が返される
     result = C1.taskEdit(
-        resDict["due"], resDict["need"], resDict["title"], resDict["id"]
+        session["userID"],
+        resDict["due"],
+        resDict["need"],
+        resDict["title"],
+        resDict["taskID"],
     )
-    # 更新成功
-    if result != "Failed":
-        # 追加処理の時
-        if resDict["id"] == "":
-            return result  # かぶりがないID
-        else:
-            # 削除処理の時
-            if resDict["due"] == "":
-                return "success del"
-            # 更新処理の時
-            else:
-                return "success update"
-    # 更新失敗
-    else:
-        return "failed"
+    return result
 
 
 # YYYY-MM-DDの形でpost
-@app.route("/plan/query", methods=["GET", "POST"])
+@app.route("/plan/query", methods=["POST"])
 def planQuery():
     """
     機能概要:
@@ -180,19 +185,16 @@ def planQuery():
             要求された日付のデータをリストとして返す
 
     """
-    # url直打ち込み回避
-    if request.method == "GET":
-        return redirect(url_for("home"))
 
     # 指定日のplanを返す
     orderDate = request.get_data()  # バイト文字列
     orderDate = orderDate.decode()  # バイト文字からテキスト文字列へ
-    orderDataList = C1.planQuery(orderDate)
+    orderDataList = C1.planQuery(session["userID"], orderDate, False)
     return orderDataList
 
 
 # YYYY-MM-DDの形でpost
-@app.route("/task/query", methods=["GET", "POST"])
+@app.route("/task/query", methods=["POST"])
 def taskQuery():
     """
     機能概要:
@@ -205,15 +207,20 @@ def taskQuery():
             要求された日付のデータをリストとして返す
 
     """
-    # url直打ち込み回避
-    if request.method == "GET":
-        return redirect(url_for("home"))
 
     # 指定日のtaskを返す
     orderDate = request.get_data()  # バイト文字列
     orderDate = orderDate.decode()  # バイト文字からテキスト文字列へ
-    orderDataList = C1.taskQuery(orderDate)
+    orderDataList = C1.taskQuery(session["userID"], orderDate, False)
     return orderDataList
+
+
+# YYYY-MM-DDの形でpost, mustDoリストを返す(titleが入ったリスト)
+@app.route("/mustDo/query", methods=["POST"])
+def mustDoQuery():
+    orderDate = request.get_data()  # バイト文字列
+    orderDate = orderDate.decode()  # バイト文字からテキスト文字列へ
+    return C1.mustDo(session["userID"], orderDate, int(session["restTime"]))
 
 
 # 定義していないurl
@@ -223,4 +230,6 @@ def pageNotFound(error):
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(
+        debug=True
+    )  ###############host='0.0.0.0'とport=とthreaded=True,debug=Falseを指定する
