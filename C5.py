@@ -4,6 +4,7 @@
 ***Purpose  :予定情報管理プログラム
 ************************************************************************'''
 
+from app import planConn
 import sqlite3
 
 
@@ -17,10 +18,12 @@ def planSearch(userID,orderDateArg):
     戻り値      :planList(List) :指定日の予定のリスト(成功時)
                 :"Failed"       :文字列"Failed"(失敗時)
     '''
-    cur=accessPlanDB()
+    cur=planConn.Cursor() 
+    
     #引数であるuserIDを名前にもつテーブルから予定の検索(未完)
     tempList=cur.execute('SELECT * FROM userID WHERE orderDate=orderDateArg')
     planList=[{"start":tempList[0], "end":tempList[1], "title":tempList[2], "planID":tempList[3]}]
+    cur.close()
 
     if(planList is None): #エラーの場合
         return "Failed"
@@ -42,10 +45,12 @@ def planInsert(userID,startArg,endArg,titleArg):
                 :"Failed"       :文字列"Failed"(失敗時)
     '''
     planIDArg='ID' #planIDを新たに作成
-    cur=accessPlanDB()
+    cur=app.planConn.Cursor() 
+
     #引数であるuserIDを名前にもつテーブルへ予定の追加(未完)
     cur.execute('INSERT INTO userID values(startArg,endArg,titleArg,titleArg)')
     tempList=cur.execute('SELECT * FROM userID WHERE planID=planIDArg')
+    cur.close()
 
     if(tempList is None):
         return "Failed"
@@ -67,10 +72,12 @@ def planUpdate(userID,startArg,endArg,titleArg,planIDArg):
     戻り値      :planIDArg(str)    :予定ID(成功時)
                 :"Failed"       :文字列"Failed"(失敗時)
     ''' 
-    cur=accessPlanDB()
+    cur=app.planConn.Cursor() 
+
     #引数であるuserIDを名前にもつテーブルの予定の更新(未完)
     cur.execute('UPDATE userID SET start=startArg, end=endArg, title=titleArg WHERE planID=planIDArg')    
     tempList=cur.execute('SELECT * FROM userID WHERE planID=planIDArg')
+    cur.close()
 
     if(tempList is None):
         return "Failed"
@@ -89,10 +96,12 @@ def planDelete(userID,planIDArg):
     戻り値      :planIDArg(str)    :予定ID(成功時)
                 :"Failed"       :文字列"Failed"(失敗時)
     ''' 
-    cur=accessPlanDB()
+    cur=app.planConn.Cursor() 
+
     #引数であるuserIDを名前にもつテーブルの予定の削除(未完)
     cur.execute('DELETE FROM userID WHERE planID=planIDArg')
     tempList=cur.execute('SELECT * FROM userID WHERE planID=planIDArg')
+    cur.close()
 
     if(tempList is None):
         return "Failed"
@@ -111,39 +120,16 @@ def planSearchMany(userID,orderDate):
     戻り値      :planListMany(List) :指定日以降の予定データのリスト(成功時)
                 :"Failed"           :文字列"Failed"(失敗時)
     ''' 
-    cur=accessPlanDB()
+    cur=app.planConn.Cursor() 
+
     #引数であるuserIDを名前にもつテーブルの指定日以降の予定の検索(未完)
     tempList=cur.execute('SELECT * FROM userID WHERE start>=orderDate')
     planListMany=[{"start":tempList[0], "end":tempList[1], "title":tempList[2], "planID":tempList[3]}]
+    cur.close()
 
     if(planListMany is None):
         return "Failed"
     else:
-        #処理
         return planListMany
 
 
-
-def makePlanDB(userID): #予定管理データベースとテーブル作成
-    dbname='plan.db'
-    conn=sqlite3.connect(dbname)
-    cur=conn.cursor()
-    cur.execute(
-        #引数であるuserIDを名前にもつテーブルを作る(未完)
-        'CREATE TABLE userID(start STRING ,end STRING ,title STRING ,planID STRING PRIMARY KEY AUTOINCREMENT)'
-    )
-
-
-
-def closePlanDB(): #予定管理データベースへのコネクションを閉じる
-    dbname='plan.db'
-    conn=sqlite3.connect(dbname)
-    conn.close()
-
-
-
-def accessPlanDB(): #存在する予定管理データベースへアクセス
-    dbname='plan.db'
-    conn=sqlite3.connect(dbname)
-    cur=conn.cursor()
-    return cur
