@@ -15,7 +15,12 @@ from flask import (
 import ast
 import json
 import os
+import sqlite3
 import C1
+
+planConn = sqlite3.connect("db/plans.db")
+taskConn = sqlite3.connect("db/tasks.db")
+userConn = sqlite3.connect("db/users.db")
 
 app = Flask(__name__)
 page = "W1"
