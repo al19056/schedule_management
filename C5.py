@@ -4,86 +4,119 @@
 ***Purpose  :予定情報管理プログラム
 ************************************************************************'''
 
+import sqlite3
 
 
 
-def planSearch(userID,orderDate):
+def planSearch(userID,orderDateArg):
     '''
-    Function Name:planSearch
-    Designer     :原田
-    Date         :2021.6.5
-    Function     :指定日の予定を検索し,リスト形式で返す
-    Return       :planList  --指定日の予定のリスト
+    機能概要    :指定日の予定を検索し,リスト形式で返す
+    引数        :userID(str)        :ユーザID
+                :orderDateArg(str)  :指定された日付
+
+    戻り値      :planList(List) :指定日の予定のリスト(成功時)
+                :"Failed"       :文字列"Failed"(失敗時)
     '''
-    if(エラー発生):
+    cur=accessPlanDB()
+    #引数であるuserIDを名前にもつテーブルから予定の検索(未完)
+    tempList=cur.execute('SELECT * FROM userID WHERE orderDate=orderDateArg')
+    planList=[{"start":tempList[0], "end":tempList[1], "title":tempList[2], "planID":tempList[3]}]
+
+    if(planList is None): #エラーの場合
         return "Failed"
     else:
-        #処理
         return planList
 
 
 
 
-def planInsert(userID,start,end,title,planID):
+def planInsert(userID,startArg,endArg,titleArg):
     '''
-    Function Name:planInsert
-    Designer     :原田
-    Date         :2021.6.5
-    Function     :予定の編集情報を受け取り,その日の予定の情報をデータベースに追加する
-    Return       :planID     --予定ID
+    機能概要    :予定の編集情報を受け取り,その日の予定の情報をデータベースに追加する
+    引数        :userID(str)        :ユーザID
+                :startArg(str)      :予定の開始日時
+                :endArg(str)        :予定の終了日時
+                :titleArg(str)      :予定の名称
+
+    戻り値      :planIDArg(str)    :予定ID(成功時)
+                :"Failed"       :文字列"Failed"(失敗時)
     '''
-    if(エラー発生):
+    planIDArg='ID' #planIDを新たに作成
+    cur=accessPlanDB()
+    #引数であるuserIDを名前にもつテーブルへ予定の追加(未完)
+    cur.execute('INSERT INTO userID values(startArg,endArg,titleArg,titleArg)')
+    tempList=cur.execute('SELECT * FROM userID WHERE planID=planIDArg')
+
+    if(tempList is None):
         return "Failed"
     else:
-        #処理
-        return planID
+        return planIDArg
     
 
 
 
-def planInsert(userID,start,end,title):
+def planUpdate(userID,startArg,endArg,titleArg,planIDArg):
     '''
-    Function Name:planUpdate
-    Designer     :原田
-    Date         :2021.6.5
-    Function     :予定の編集情報を受け取り,その日の予定の情報を更新する
-    Return       :planID     --予定ID
-    '''
-    if(エラー発生):
+    機能概要    :予定の編集情報を受け取り,その日の予定の情報を更新する
+    引数        :userID(str)        :ユーザID
+                :startArg(str)      :予定の開始日時
+                :endArg(str)        :予定の終了日時
+                :titleArg(str)      :予定の名称
+                :planIDArg(str)        :予定ID
+
+    戻り値      :planIDArg(str)    :予定ID(成功時)
+                :"Failed"       :文字列"Failed"(失敗時)
+    ''' 
+    cur=accessPlanDB()
+    #引数であるuserIDを名前にもつテーブルの予定の更新(未完)
+    cur.execute('UPDATE userID SET start=startArg, end=endArg, title=titleArg WHERE planID=planIDArg')    
+    tempList=cur.execute('SELECT * FROM userID WHERE planID=planIDArg')
+
+    if(tempList is None):
         return "Failed"
     else:
-        #処理
-        return planID
+        return planIDArg
 
 
 
 
-def planInsert(userID,planID):
+def planDelete(userID,planIDArg):
     '''
-    Function Name:planDelete
-    Designer     :原田
-    Date         :2021.6.5
-    Function     :指定された予定IDを持つ予定の情報をデータベースから削除する
-    Return       :planID     --予定ID
-    '''
-    if(エラー発生):
+    機能概要    :指定された予定IDを持つ予定の情報をデータベースから削除する
+    引数        :userID(str)    :ユーザID
+                :planIDArg(str)    :予定ID
+
+    戻り値      :planIDArg(str)    :予定ID(成功時)
+                :"Failed"       :文字列"Failed"(失敗時)
+    ''' 
+    cur=accessPlanDB()
+    #引数であるuserIDを名前にもつテーブルの予定の削除(未完)
+    cur.execute('DELETE FROM userID WHERE planID=planIDArg')
+    tempList=cur.execute('SELECT * FROM userID WHERE planID=planIDArg')
+
+    if(tempList is None):
         return "Failed"
     else:
-        #処理
-        return planID
+        return planIDArg
 
 
 
 
 def planSearchMany(userID,orderDate):
     '''
-    Function Name:planSearchMany
-    Designer     :原田
-    Date         :2021.6.5
-    Function     :指定日以降の予定データをリスト形式で返す
-    Return       :planListMany   -- 指定日以降の予定のリスト
-    '''
-    if(エラー発生):
+    機能概要    :指定日以降の予定データをリスト形式で返す
+    引数        :userID(str)    :ユーザID
+                :orderDate(str) :指定された日付
+
+    戻り値      :planListMany(List) :指定日以降の予定データのリスト(成功時)
+                :"Failed"           :文字列"Failed"(失敗時)
+    ''' 
+    cur=accessPlanDB()
+    #引数であるuserIDを名前にもつテーブルの指定日以降の予定の検索(未完)
+    tempList=cur.execute('SELECT * FROM userID WHERE start>=orderDate')
+    planListMany=[{"start":tempList[0], "end":tempList[1], "title":tempList[2], "planID":tempList[3]}]
+
+    if(planListMany is None):
         return "Failed"
     else:
         #処理
@@ -91,8 +124,26 @@ def planSearchMany(userID,orderDate):
 
 
 
+def makePlanDB(userID): #予定管理データベースとテーブル作成
+    dbname='plan.db'
+    conn=sqlite3.connect(dbname)
+    cur=conn.cursor()
+    cur.execute(
+        #引数であるuserIDを名前にもつテーブルを作る(未完)
+        'CREATE TABLE userID(start STRING ,end STRING ,title STRING ,planID STRING PRIMARY KEY AUTOINCREMENT)'
+    )
 
 
 
+def closePlanDB(): #予定管理データベースへのコネクションを閉じる
+    dbname='plan.db'
+    conn=sqlite3.connect(dbname)
+    conn.close()
 
 
+
+def accessPlanDB(): #存在する予定管理データベースへアクセス
+    dbname='plan.db'
+    conn=sqlite3.connect(dbname)
+    cur=conn.cursor()
+    return cur
