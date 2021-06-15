@@ -10,6 +10,11 @@ def CIR(userID,password):
     import math
     import argparse
     import logging
+    global userIDlist 
+    global passwordlist
+    #userIDlist : userIDの配列
+    #passwordlist : passwordの配列 
+    # ここに各々のデータを格納する 
     """
         C2 認証処理部から送られてきたデータを登録する。
         引数:
@@ -21,8 +26,6 @@ def CIR(userID,password):
     count = 0
     userIDlist = []
     passwordlist = []
-    # userIDlist: userIDの配列 
-    # passwordlist: passwordの配列
     userIDlist.append("userID")
     passwordlist.append("password")
     count+=1
@@ -33,17 +36,19 @@ def CIR(userID,password):
 
     
 #CustomerInformationSuvey(userID) 顧客情報調査(userID)
-    def CISu():
-        """
-        userIDの情報をC2 認証処理部にデータを送る
-        戻り値　:　userIDlist
-        """
-        return userIDlist
+def CISu():
+    """
+    userIDの情報をC2 認証処理部にデータを送る
+    戻り値　:　userIDlist
+    """
+    return userIDlist
 
-    #CustomerInformationSuvey(password) 顧客情報調査(password)
-    def CISp():
-        """
-        passwordの情報をC2 認証処理部にデータを送る
-        戻り値: passwordlist
-        """
-        return passwordlist
+#CustomerInformationSuvey(password) 顧客情報調査(password)
+def CISp():
+    """
+    passwordの情報をC2 認証処理部にデータを送る
+    戻り値: passwordlist
+    """
+    return passwordlist
+
+    
