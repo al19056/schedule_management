@@ -31,17 +31,19 @@ def authenticationProcessing(userID,password):
  #CISu()が引数のuserIDと合ったら、for文を抜ける
         if num is userID:
             break
- #for文の終了後    
-    return "failed"
-
+ #for文の終了後
+    else:    
+        return "failed"
+    
 #for文を使って、顧客情報のpasswordを照合する
     for mum in C7.CISp():
 #CISp()と引数のpasswordが合ったら、successを返し、for文を抜ける
         if mum == password:
             return "success"
-            break
+        break
 #for文の終了後
-    return "failed" 
+    else:
+        return "failed" 
 
 def addUser(userID,password):
     """
