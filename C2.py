@@ -59,7 +59,6 @@ def addUser(userID,password):
     failed : エラーが起こった場合にC1に返す
     success : 登録に成功した場合にC1に返す
     """
-    result = authenticationProcessing(userID,password)
     #既に登録済み
     #lum ---> for文を回すための引数
     #lumとuserIDが一致した場合、exitedを返す。
