@@ -161,7 +161,7 @@ def planSearchMany(userIDArg,orderDate):
 
 
 
-def planQueryAll(userIDArg):
+def planSearchAll(userIDArg):
     '''
     機能概要    :ユーザのすべての予定データをリスト形式で返す
     引数        :userIDArg(str)    :ユーザID
