@@ -7,7 +7,7 @@
 import C5
 
 
-def planQuery(userID,orderDate):
+def planOrder(userID,orderDate):
     '''
     機能概要    :指定日の予定の情報を要求する
     引数        :userID(str)    :ユーザID
@@ -44,7 +44,7 @@ def planEdit(userID,start,end,title,planID):
 
 
 
-def planQueryMany(userID,orderDate):
+def planOrderMany(userID,orderDate):
     '''
     機能概要    :指定日以降の予定データをリスト形式で返す
     引数        :userID(str)    :ユーザID
@@ -58,7 +58,7 @@ def planQueryMany(userID,orderDate):
 
 
 
-def planQueryAll(userID):
+def planOrderAll(userID):
     '''
     機能概要    :ユーザのすべての予定データをリスト形式で返す
     引数        :userID(str)    :ユーザID
