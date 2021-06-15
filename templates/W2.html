@@ -2,6 +2,7 @@
 {% block content %}
 
 <link rel='stylesheet' href='../static/lib/main.css' />
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src='../static/lib/main.js'></script>
 <style>
   th.fc-day-sat {
@@ -19,14 +20,36 @@
   td.fc-day-sun {
     background-color: #ffeaea;
   }
+
+  .planColor {
+    background-color: rgb(0, 204, 255);
+  }
+
+  .taskColor {
+    background-color: rgb(255, 187, 0);
+  }
 </style>
-<script>
+<script type="text/javascript">
+  var eventsList = [];
+  {% if planEvents %}
+  {% for plan in planEvents %}
+  eventsList.push({ start: {{ plan["start"]| tojson }}, title: {{ plan["title"]| tojson }}, color: "blue", className: ["planColor"]})
+  {% endfor %}
+  {% endif %}
+
+  {% if taskEvents %}
+  {% for task in taskEvents %}
+  eventsList.push({ start: {{ task['due']| tojson }}, title: {{ task['title']| tojson }}, color: 'red', className: ['taskColor']})
+  {% endfor %}
+  {% endif %}
+
 
   document.addEventListener('DOMContentLoaded', function () {
     var calendarEl = document.getElementById('calendar');
     var calendar = new FullCalendar.Calendar(calendarEl, {
       locale: 'ja',
-      //height: 'auto',
+      height: window.innerHeight * 0.9,
+      dayMaxEvents: true,
       headerToolbar: {
         left: "prev",//"dayGridMonth,listMonth",
         center: "title",
@@ -40,14 +63,65 @@
       dayCellContent: function (e) {
         e.dayNumberText = e.dayNumberText.replace('日', '');
       },
-      businessHours: false
+      displayEventTime: false,
+      businessHours: false,
+      editable: false,
+      dateClick: function (info) {
+        //alert(info.dateStr)
+        $.post("{{url_for('W2')}}", info.dateStr)
+          .done(function (data) {
+            window.location.href = "/homeDetails/" + data;
+          })
+      },
+      eventClick: function (info) {
+        $.post("{{url_for('W2')}}", info.event.startStr)
+          .done(function (data) {
+            window.location.href = "/homeDetails/" + data;
+          })
+      },
+      events: eventsList
     });
+
     calendar.render();
   });
-
 </script>
+
 <div id="calendar" class="col-sm-8"></div>
-</script>
-
-<h3 class="hi">W2</h3>
+<div class="col-sm-4">
+  <form action="{{url_for('W2')}}" method="POST">
+    <div class="">
+      <p></p>
+      <div>
+        <label class="text-center">一日の休憩時間 (睡眠・食事を含む)</label>
+      </div>
+      <div>
+        <input class="input-lg" type="number" name="restTime" value={{session['restTime']}} min=0 required>
+      </div>
+      <input type="submit" name="update" value="更新">
+    </div>
+    <div class="mustDoList text-center">
+      <p></p>
+      <label>MustDoリスト</label>
+      <textarea class="form-control" rows="18" readonly wrap="off" style="font: size 1.3em;">
+        {% for must in mustDoList%}
+        {{must}}
+        {% endfor %}
+        </textarea>
+    </div>
+    <div>
+      <p></p>
+    </div>
+    <div class="toDoList text-center">
+      <label>ToDoリスト</label>
+      <textarea class="form-control" rows="18" readonly wrap="off" style="font: size 1.3em;">
+      {% for task in toDoList %}
+      {{task['title']}}
+      {% endfor %}
+      </textarea>
+    </div>
+    <div class="btn-lg row">
+      <input type="submit" name="addTask" value="課題追加">
+    </div>
+  </form>
+</div>
 {% endblock %}

@@ -16,6 +16,7 @@ import ast
 import json
 import os
 import sqlite3
+import datetime
 import C1
 
 planConn = sqlite3.connect("db/plans.db")
@@ -26,82 +27,150 @@ app = Flask(__name__)
 page = "W1"
 app.secret_key = os.urandom(16)
 
-# テスト用
-@app.route("/test")
-def test():
-    session["userID"] = "123456"
-    session["password"] = "qwerty"
-    session["status"] = "True"
-    session["restTime"] = "7"
-    return redirect(url_for("home"))
-
-
+# ログイン画面
 @app.route("/login", methods=["GET", "POST"])
-def login():
-    if request.method == "GET":
-        return render_template("W1.html")
-    else:
-        return C1.requestLogin(request.form.get("email"), request.form.get("password"))
-
-
-@app.route("/login/addUser", methods=["POST"])
-def addUser():
-    return C1.requestAddUser(request.form.get("email"), request.form.get("password"))
-
-
-@app.route("/home", methods=["GET", "POST"])
-def home():
-    """
-    機能概要
-    """
-    title = "home"
-
-    # 初回?
-    if request.method != "POST":
-        return render_template("home.html", title=title)
-    # ボタンで画面遷移
-    else:
-        # 画面遷移request
-        if request.form.get("send") not in ("決定", "戻る"):
-            page = request.form.get("send", None)
-            # messageを与えるとエラーalart(E1,E2,・・・,E8)
-            return render_template(
-                page + ".html",
-                title=page,  # htmlのtitleにpage名を渡す
-                # message="E1",
-                existedPlans=[  # 既に存在している予定
-                    {
-                        "start": "2021-06-10T15:37",
-                        "end": "2021-07-10T15:01",
-                        "title": "test1",
-                        "planID": "111fd1111",
-                    },
-                    {
-                        "start": "2022-06-10T15:37",
-                        "end": "2022-07-10T15:01",
-                        "title": "test2",
-                        "planID": "22222222",
-                    },
-                ],
-                existedTasks=[  # 既に存在している課題
-                    {
-                        "due": "2021-06-10T15:37",
-                        "need": "7",
-                        "title": "test1",
-                        "taskID": "111fd1111",
-                    },
-                    {
-                        "due": "2022-06-10T15:37",
-                        "need": "4",
-                        "title": "test2",
-                        "taskID": "22222222",
-                    },
-                ],
+def W1():
+    session["restTime"] = 13  # default
+    # login・registerボタン押下時
+    if request.form:
+        if request.form.get("login"):
+            return C1.requestLogin(
+                request.form.get("email"), request.form.get("password")
             )
+        elif request.form.get("register"):
+            return C1.requestAddUser(
+                request.form.get("email"), request.form.get("password")
+            )
+
+    return render_template("W1.html")
+
+
+# 初期画面
+@app.route("/home", methods=["GET", "POST"])
+def W2():
+    # 非ログイン時
+    if not "status" in session.keys():
+        print("non status")
+        return redirect(url_for("W1"))
+    if session["status"] != "True":
+        print("status!=true")
+        return redirect(url_for("W1"))
+
+    if request.method == "POST":
+        # 課題追加ボタン押下時
+        if request.form.get("addTask", None) != None:
+            return redirect(url_for("W6"))
+        # 更新ボタン押下時
+        elif request.form.get("update", None) != None:
+            session["restTime"] = request.form.get("restTime", None)
+            return render_template(
+                "W2.html",
+                restTime=session["restTime"],
+                mustDoList=C1.mustDo(
+                    session["userID"],
+                    datetime.datetime.now().isoformat()[:10],
+                    session["restTime"],
+                ),
+                toDoList=C1.taskQuery(
+                    session["userID"], datetime.datetime.now().isoformat()[:10], "over"
+                ),
+                planEvents=C1.planQuery(
+                    session["userID"], datetime.datetime.now().isoformat()[:10], "all"
+                ),
+                taskEvents=C1.taskQuery(
+                    session["userID"], datetime.datetime.now().isoformat()[:10], "all"
+                ),
+            )
+        # 日付ボタン押下時
         else:
-            return render_template("home.html")
+            dictKeys = request.form.keys()
+            resDate = ""
+            for key in dictKeys:
+                resDate = key
+            return resDate[:10]  # jqueryでの応答によるリダイレクト・レンダーはできないため日付を返しjqueryで遷移
+
+    if request.method == "GET":
+        return render_template(
+            "W2.html",
+            restTime=session["restTime"],
+            mustDoList=C1.mustDo(
+                session["userID"],
+                datetime.datetime.now().isoformat()[:10],
+                session["restTime"],
+            ),
+            toDoList=C1.taskQuery(
+                session["userID"], datetime.datetime.now().isoformat()[:10], "over"
+            ),
+            planEvents=C1.planQuery(
+                session["userID"], datetime.datetime.now().isoformat()[:10], "all"
+            ),
+            taskEvents=C1.taskQuery(
+                session["userID"], datetime.datetime.now().isoformat()[:10], "all"
+            ),
+        )
 
 
+@app.route("/homeDetails/<date>", methods=["GET", "POST"])
+def W3(date):
+    # 非ログイン時
+    if not "status" in session.keys():
+        print("non status")
+        return redirect(url_for("W1"))
+    if session["status"] != "True":
+        print("status!=true")
+        return redirect(url_for("W1"))
+
+    return render_template("W3.html")
+
+
+@app.route("/planDetails/<date>", methods=["GET", "POST"])
+def W4(date):
+    # 非ログイン時
+    if not "status" in session.keys():
+        return redirect(url_for("W1"))
+    if session["status"] != "True":
+        return redirect(url_for("W1"))
+
+    # 戻るボタン
+    if request.form.get("send"):
+        return redirect(url_for("W3", date=date))
+
+    existedPlans = C1.planQuery(session["userID"], date, "day")
+    return render_template("W4.html", existedPlans=existedPlans)
+
+
+@app.route("/taskDetails/<date>", methods=["GET", "POST"])
+def W5(date):
+    # 非ログイン時
+    if not "status" in session.keys():
+        return redirect(url_for("W1"))
+    if session["status"] != "True":
+        return redirect(url_for("W1"))
+
+    # 戻るボタン
+    if request.form.get("send"):
+        return redirect(url_for("W3", date=date))
+
+    existedTasks = C1.taskQuery(session["userID"], date, "day")
+    return render_template("W5.html", existedTasks=existedTasks)
+
+
+@app.route("/taskAddition", methods=["GET", "POST"])
+def W6():
+    # 非ログイン時
+    if not "status" in session.keys():
+        return redirect(url_for("W1"))
+    if session["status"] != "True":
+        return redirect(url_for("W1"))
+
+    # 戻るボタン
+    if request.form.get("send"):
+        return redirect(url_for("W2"))
+
+    return render_template("W6.html")
+
+
+# W4で呼ばれる
 # postは{"start":"・・・", "end":"・・・", "title":"・・・", "planID":"・・・"}の形
 @app.route("/plan/edit", methods=["POST"])
 def planEdit():
@@ -139,6 +208,7 @@ def planEdit():
     return result
 
 
+# W5,6で呼ばれる
 # postは{"due":"・・・", "need":"・・・", "title":"・・・", "taskID":"・・・"}の形
 @app.route("/task/edit", methods=["POST"])
 def taskEdit():
@@ -176,6 +246,7 @@ def taskEdit():
     return result
 
 
+'''
 # YYYY-MM-DDの形でpost
 @app.route("/plan/query", methods=["POST"])
 def planQuery():
@@ -226,12 +297,7 @@ def mustDoQuery():
     orderDate = request.get_data()  # バイト文字列
     orderDate = orderDate.decode()  # バイト文字からテキスト文字列へ
     return C1.mustDo(session["userID"], orderDate, int(session["restTime"]))
-
-
-# 定義していないurl
-@app.errorhandler(404)
-def pageNotFound(error):
-    return "404 not found."
+'''
 
 
 if __name__ == "__main__":

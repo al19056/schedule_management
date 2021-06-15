@@ -99,9 +99,14 @@ function postPlanEdit(thisObj) {
     var id = $(thisObj).parent().parent().find("#planID").val();
     var idFind = $(thisObj).parent().parent().find("#planID")
 
-    if (start == "" || end == "" || planName == "" || start >= end) {
+    if (start == "" || end == "" || planName == "" || start >= end || start.substr(0, 10) != end.substr(0, 10)) {
       nowDoing = false;
-      alert("正しい値を入力してください")
+      if (start.substr(0, 10) == end.substr(0, 10)) {
+        alert("正しい値を入力してください")
+      }
+      else {
+        alert("複数日にまたがる予定の追加はできません")
+      }
       return;
     }
     var resStr = "{'start':'" + start + "','end':'" + end + "','title':'" + planName + "','planID':'" + id + "'}"

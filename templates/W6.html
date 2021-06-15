@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% block content %}
 <div class="text-center bg-primary">
-  <h3 class="W5">課題追加画面</h3>
+  <h3 class="W6">課題追加画面</h3>
 </div>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -51,31 +51,6 @@
     </div>
   </form>
 </div>
-
-
-<!--既に予定がある時-->
-{% if existedTasks %}
-{% for task in existedTasks[::-1] %}
-<script type="text/javascript">
-  var clone = $("#task-info").clone(true); //task-info class clone
-  clone
-    .find("#due")
-    .val("{{task['due']}}")
-  clone
-    .find("#need")
-    .val("{{task['need']}}")
-  clone
-    .find("#task-name")
-    .val("{{task['title']}}")
-  clone
-    .find("#taskID")
-    .val("{{task['taskID']}}")
-
-  clone.insertBefore($("#task-info"))
-</script>
-{% endfor %}
-{% endif %}
-
 <!--欄追加削除処理-->
 <script src="../static/js/taskAddDelDecide.js"></script>
 

@@ -3,11 +3,12 @@
 ###***Date:2021.6.11
 ###***Purpose:C1コンポーネント(サーバサイドの関数のみ)
 #####################################################
-import C2
-import C3
-import C4
+import testC2 as C2
+import testC3 as C3
+import testC4 as C4
 from flask import redirect, session, url_for
 import datetime
+import hashlib
 
 # M1-1 ログイン処理モジュール
 def requestLogin(userID, password):
@@ -26,16 +27,17 @@ def requestLogin(userID, password):
           Cookieへログイン情報を保存
           homeへリダイレクトし、W2初期画面を表示する
     """
-    result = C2.authenticationProcessing(userID, password)
+    hashPassword = hashlib.sha256(password.encode()).hexdigest()  # passwordのハッシュ化
+    result = C2.authenticationProcessing(userID, hashPassword)
     # ログイン失敗
     if result == "failed":
         return "failed"
     # ログイン成功
     else:
         session["userID"] = userID
-        session["password"] = password
+        session["password"] = hashPassword
         session["status"] = "True"
-        return redirect(url_for("home"))
+        return redirect(url_for("W2"))
 
 
 # M1-2 ユーザ登録処理モジュール
@@ -55,7 +57,8 @@ def requestAddUser(userID, password):
           Cookieへログイン情報を保存
           homeへリダイレクトし、W2初期画面を表示する
     """
-    result = C2.addUser(userID, password)
+    hashPassword = hashlib.sha256(password.encode()).hexdigest()  # passwordのハッシュ化
+    result = C2.addUser(userID, hashPassword)
     if result == "existed":
         return "このIDはすでに登録済みです。正しいパスワードを入力してください。"
     # ログイン失敗
@@ -64,29 +67,33 @@ def requestAddUser(userID, password):
     # ログイン成功
     else:
         session["userID"] = userID
-        session["password"] = password
+        session["password"] = hashPassword
         session["status"] = "True"
-        return redirect(url_for("home"))
+        return redirect(url_for("W2"))
 
 
 # M1-3 予定情報問い合わせ処理モジュール
-def planQuery(userID, orderDate, many):
+def planQuery(userID, orderDate, mode):
     """
     C3予定処理部に予定情報の要求を行い、結果を返す
 
       引数:
         userID    (str)    :ユーザのID
         orderDate (str)    :要求年月日 YYYY-MM-DDの形式
-        many      (boolean):指定日以降のデータも含むかどうか
-
+        mode      (str)    :'day'  :指定日
+                            'month':指定月
+                            'over' :指定日以降すべて
+                            'all'  :すべて
       戻り値:
         dataList (list):予定情報の入ったリスト(予定情報は辞書形式)
         例:[{"start":"2021-06-10T12:00",　"end":"2021-06-10T15:00",　"title":"宿題",　"planID":"uqwpruedfqer"},{"start":"2021-...}]
     """
-    if many != True:
-        dataList = C3.planOrder(userID, orderDate)
-    else:
-        dataList = C3.planOrderMany(userID, orderDate)
+    if mode == "day":
+        dataList = C3.planQuery(userID, orderDate[:10])
+    elif mode == "over":
+        dataList = C3.planQueryMany(userID, orderDate[:10])
+    elif mode == "all":
+        dataList = C3.planQueryAll(userID)
     return dataList
 
 
@@ -126,24 +133,29 @@ def planEdit(userID, start, end, title, planID):
 
 
 # M1-5 課題情報問い合わせ処理モジュール
-def taskQuery(userID, orderDate, many):
+def taskQuery(userID, orderDate, mode):
     """
     C4課題処理部に課題情報の要求を行い、結果を返す
 
       引数:
       　userID    (str)    :ユーザのID
         orderDate (str)    :要求年月日 YYYY-MM-DDの形式
-        many      (boolean):指定日以降のデータも含むかどうか
+        mode      (str)    :'day'  :指定日
+                            'month':指定月
+                            'over' :指定日以降すべて
+                            'all'  :すべて
 
       戻り値:
         dataList (list):課題情報の入ったリスト(課題情報は辞書形式)
         例:[{"due":"2021-06-10T12:00",　"need":"7",　"title":"宿題",　"taskID":"uqwpruedfqer"},{"due":"2021-...}]
     """
 
-    if many != True:
-        dataList = C4.taskOrder(userID, orderDate)
-    else:
-        dataList = C4.taskOrderMany(userID, orderDate)
+    if mode == "day":
+        dataList = C4.taskQuery(userID, orderDate[:10])
+    elif mode == "over":
+        dataList = C4.taskQueryMany(userID, orderDate[:10])
+    elif mode == "all":
+        dataList = C4.taskQueryAll(userID)
     return dataList
 
 
@@ -201,9 +213,9 @@ def mustDo(userID, orderDate, restTime):
     orderDateTomorrow += datetime.timedelta(days=1)
     orderDateTomorrow = orderDateTomorrow.isoformat()[:10]
 
-    planList = planQuery(userID, orderDateTomorrow, True)  # 指定日以降の全予定データ
+    planList = planQuery(userID, orderDateTomorrow, "over")  # 指定日以降の全予定データ
     planList = sorted(planList, key=lambda x: x["end"])
-    taskList = taskQuery(userID, orderDateTomorrow, True)  # 指定日以降の全課題データ
+    taskList = taskQuery(userID, orderDateTomorrow, "over")  # 指定日以降の全課題データ
     taskList = sorted(taskList, key=lambda x: x["due"])
 
     if len(taskList) == 0:
@@ -228,9 +240,9 @@ def mustDo(userID, orderDate, restTime):
 
     # 課題の締切時間の一日前を返す関数
     def taskBeforeDue(t):
-        tdue = datetime.datetime.strptime(t["due"], "%Y-%m-%d")
+        tdue = datetime.datetime.strptime(t["due"][:10], "%Y-%m-%d")
         tdue -= datetime.timedelta(days=1)
-        tdue = tdue.isoformat()[:10]
+        tdue = tdue.isoformat()
         return tdue
 
     # 課題の残り時間(needMin)を更新する関数
@@ -285,7 +297,7 @@ def mustDo(userID, orderDate, restTime):
         task["due"] = taskBeforeDue(task)
 
     # 考える日付(一番最後の課題の日付で初期化)
-    targetDay = datetime.datetime.strptime(taskList[-1]["due"], "%Y-%m-%d")
+    targetDay = datetime.datetime.strptime(taskList[-1]["due"][:10], "%Y-%m-%d")
     targetDay = targetDay.isoformat()[:10]
 
     mustDoList = []  # 返り値用リスト
