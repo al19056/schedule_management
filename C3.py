@@ -16,7 +16,7 @@ def planQuery(userID,orderDate):
     戻り値      :planSearchの戻り値(planList)   :指定日の予定のリスト(成功時)
                 :"Failed"                       :文字列"Failed"(失敗時)
     ''' 
-    return C5.planSearch(orderDate)
+    return C5.planSearch(userID,orderDate)
 
 
 
@@ -53,5 +53,17 @@ def planQueryMany(userID,orderDate):
     戻り値      :planSearchManyの戻り値(planListMany)   :指定日以降の予定のリスト(成功時)
                 :"Failed"                               :文字列"Failed"(失敗時)
     '''
-    return C5.planSearchMany(orderDate,userID)
+    return C5.planSearchMany(userID,orderDate)
 
+
+
+
+def planQueryAll(userID):
+    '''
+    機能概要    :ユーザのすべての予定データをリスト形式で返す
+    引数        :userID(str)    :ユーザID
+
+    戻り値      :planSearchAllの戻り値(planListAll)     :ユーザのすべての予定のリスト(成功時)
+                :"Failed"                               :文字列"Failed"(失敗時)
+    '''
+    return C5.planSearchAll(userID)
