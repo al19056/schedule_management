@@ -1,17 +1,16 @@
 ################################
 ###Designer:山川
-###Date:2021.6.6
+###Date:2021.6.17
 ###Purpose:サーバー側プログラム
 ################################
 from flask import (
     Flask,
     render_template,
     url_for,
-    flash,
     redirect,
     request,
     session,
-)  # 追加
+)
 import json
 import os
 import sqlite3
@@ -28,6 +27,21 @@ app.secret_key = os.urandom(16)  # Cookie暗号化に使用
 # ログイン画面
 @app.route("/login", methods=["GET", "POST"])
 def W1():
+    """
+    W1ログイン画面におけるPOST,GET要求への応答の定義
+
+        引数：なし
+
+        戻り値：
+            POST時：
+                ログイン成功時　：W2へリダイレクト
+                ログイン失敗時　：エラーメッセージ表示
+                ユーザ登録時  　：W2へリダイレクト
+                ユーザ登録失敗時：エラーメッセージ表示
+
+            GET時：
+                W1を表示
+    """
     session["restTime"] = 13  # defaultの休憩時間を設定
 
     # post時(htmlフォームからpost)
@@ -54,6 +68,22 @@ def W1():
 # 初期画面
 @app.route("/home", methods=["GET", "POST"])
 def W2():
+    """
+    W2初期画面におけるPOST,GET要求への応答の定義
+
+        引数：なし
+
+        戻り値：
+            非ログイン時：W1へリダイレクト
+
+            POST時：
+                課題追加ボタン押下時　：W6へリダイレクト
+                更新ボタン押下時　  　：mustDoリストを更新しW2を表示
+                日付ボタン押下時  　　：W3へリダイレクト
+
+            GET時：
+                既ログイン時：W2表示
+    """
     # 非ログイン時
     if not "status" in session.keys():
         print("non status")
@@ -104,6 +134,24 @@ def W2():
 # 予定・課題の確認画面
 @app.route("/homeDetails/<date>", methods=["GET", "POST"])
 def W3(date):
+    """
+    W3予定・課題確認画面におけるPOST,GET要求への応答の定義
+
+        引数：
+            date (文字列):選択された日付
+
+        戻り値：
+            非ログイン時：W1へリダイレクト
+
+            POST時：
+                予定欄の編集ボタン押下時　：W4へリダイレクト
+                課題欄の編集ボタン押下時　：W5へリダイレクト
+                戻るボタン押下時　　      ：W2へリダイレクト
+                日付ボタン押下時  　    　：押された日付を返す
+
+            GET時：
+                既ログイン時：W3表示
+    """
     # 非ログイン時
     if not "status" in session.keys():
         print("non status")
@@ -147,6 +195,21 @@ def W3(date):
 # 予定編集画面
 @app.route("/planDetails/<date>", methods=["GET", "POST"])
 def W4(date):
+    """
+    W4予定編集画面におけるPOST,GET要求への応答の定義
+
+        引数：
+            date (文字列):選択された日付
+
+        戻り値：
+            非ログイン時：W1へリダイレクト
+
+            POST時：
+                戻るボタン押下時　　      ：W3へリダイレクト
+
+            GET時：
+                既ログイン時：W4表示
+    """
     # 非ログイン時
     if not "status" in session.keys():
         return redirect(url_for("W1"))
@@ -164,6 +227,21 @@ def W4(date):
 # 課題編集画面
 @app.route("/taskDetails/<date>", methods=["GET", "POST"])
 def W5(date):
+    """
+    W5課題編集画面におけるPOST,GET要求への応答の定義
+
+        引数：
+            date (文字列):選択された日付
+
+        戻り値：
+            非ログイン時：W1へリダイレクト
+
+            POST時：
+                戻るボタン押下時　　      ：W3へリダイレクト
+
+            GET時：
+                既ログイン時：W5表示
+    """
     # 非ログイン時
     if not "status" in session.keys():
         return redirect(url_for("W1"))
@@ -181,6 +259,20 @@ def W5(date):
 # 課題追加画面
 @app.route("/taskAddition", methods=["GET", "POST"])
 def W6():
+    """
+    W6課題追加画面におけるPOST,GET要求への応答の定義
+
+        引数：なし
+
+        戻り値：
+            非ログイン時：W1へリダイレクト
+
+            POST時：
+                戻るボタン押下時　　      ：W2へリダイレクト
+
+            GET時：
+                既ログイン時：W6表示
+    """
     # 非ログイン時
     if not "status" in session.keys():
         return redirect(url_for("W1"))
@@ -199,21 +291,17 @@ def W6():
 @app.route("/plan/edit", methods=["POST"])
 def planEdit():
     """
-    機能概要:
-        W4予定編集画面で決定ボタン・削除ボタン(既に存在していた予定の削除時のみ)
-        を押下した時呼び出される関数
+    W4予定編集画面で決定ボタン・削除ボタン(既に存在していた予定の削除時のみ)
+    を押下した時呼び出される関数
 
-            引数:
-                クライアント側から{"start":"・・・", "end":"・・・", "title":"・・・", "id":"・・・"}
-                の形でバイト列が送られてくる
-                時間はYYYY-MM-DDThh:mmの形
+    引数:なし
 
-            戻り値:
-                更新成功:
-                    新規追加時:新規作成ID
-                        削除時:'success del'
-                        更新時:'success update'
-                    更新失敗時:'failed'
+    戻り値:
+        更新成功:
+            新規追加時:新規作成ID
+                削除時:'success del'
+                更新時:'success update'
+            更新失敗時:'failed'
     """
 
     resStr = request.get_data()  # postされたバイト文字列
@@ -237,21 +325,17 @@ def planEdit():
 @app.route("/task/edit", methods=["POST"])
 def taskEdit():
     """
-    機能概要:
-        W5,6予定編集画面で決定ボタン・削除ボタン(既に存在していた課題の削除時のみ)
-        を押下した時呼び出される関数
+    W5,6予定編集画面で決定ボタン・削除ボタン(既に存在していた課題の削除時のみ)
+    を押下した時呼び出される関数
 
-            引数:
-                クライアント側から{"due":"・・・", "need":"・・・", "title":"・・・", "id":"・・・"}
-                の形でバイト列が送られてくる
-                時間はYYYY-MM-DDThh:mmの形
+    引数:なし
 
-            戻り値:
-                更新成功:
-                    新規追加時:新規作成ID
-                        削除時:'success del'
-                        更新時:'success update'
-                    更新失敗時:'failed'
+    戻り値:
+        更新成功:
+            新規追加時:新規作成ID
+                削除時:'success del'
+                更新時:'success update'
+            更新失敗時:'failed'
     """
 
     resStr = request.get_data()
@@ -273,6 +357,15 @@ def taskEdit():
 # 指定されていないurlにアクセスしたとき
 @app.errorhandler(404)
 def errorPage(error):
+    """
+    存在しないurlにアクセスしたときにW1へリダイレクトする
+
+    引数：
+        error: エラー情報
+
+    戻り値：
+        W1へリダイレクト
+    """
     return redirect(url_for("W1"))
 
 
