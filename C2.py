@@ -1,3 +1,4 @@
+
 ##############################################
 ###***Designer:池之上
 ###***Date:2021.6.12
@@ -31,19 +32,16 @@ def authenticationProcessing(userID,password):
     for num in C7.CISu():
         #numとuserIDが一致した場合、次の処理に移る
         if num == userID + "\n":
-            break
+            #xにuserIDを格納している番号を入れる
+            x = C7.CISu().index(num)
+            #C7.CISp()のx番目の要素とpasswordが一致した場合、successを返す
+            if C7.CISp()[x] == password +"\n":
+                return "success"
+    #for文終了後、何にも当てはまらない場合、failedを返す               
     else:
         return "failed"
-            #for文を使って、顧客情報のpasswordを照合する
-            #mum ---> for文を回すための引数
-    for mum in C7.CISp():
-    #mumとpasswordが一致した場合、successを返す
-        if mum == password + "\n":
-            return "success"
-        #mumとpasswordが一致しなかった場合、failedを返す
-    else:
-        return "failed" 
-     
+
+
 
 def addUser(userID,password):
     """
