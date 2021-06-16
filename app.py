@@ -1,8 +1,8 @@
-"""
-***Designer:山川
-***Date:2021.6.6
-***Purpose:サーバー側プログラム
-"""
+################################
+###Designer:山川
+###Date:2021.6.6
+###Purpose:サーバー側プログラム
+################################
 from flask import (
     Flask,
     render_template,
@@ -12,11 +12,11 @@ from flask import (
     request,
     session,
 )  # 追加
-import ast
 import json
 import os
 import sqlite3
 import datetime
+from dateutil.relativedelta import relativedelta
 import C1
 
 planConn = sqlite3.connect("db/plans.db")
@@ -24,25 +24,32 @@ taskConn = sqlite3.connect("db/tasks.db")
 userConn = sqlite3.connect("db/users.db")
 
 app = Flask(__name__)
-page = "W1"
-app.secret_key = os.urandom(16)
+app.secret_key = os.urandom(16)  # Cookie暗号化に使用
 
 # ログイン画面
 @app.route("/login", methods=["GET", "POST"])
 def W1():
-    session["restTime"] = 13  # default
-    # login・registerボタン押下時
-    if request.form:
+    session["restTime"] = 13  # defaultの休憩時間を設定
+    session["date"] = datetime.datetime.now().isoformat()[:10]
+    # post時(htmlフォームからpost)
+    if request.method == "POST":
+        # loginボタン押下時
         if request.form.get("login"):
             return C1.requestLogin(
                 request.form.get("email"), request.form.get("password")
             )
+        # registerボタン押下時
         elif request.form.get("register"):
             return C1.requestAddUser(
                 request.form.get("email"), request.form.get("password")
             )
+        # その他はエラー
+        else:
+            return "error"
 
-    return render_template("W1.html")
+    # 通常読み込み時
+    if request.method == "GET":
+        return render_template("W1.html")
 
 
 # 初期画面
@@ -56,60 +63,48 @@ def W2():
         print("status!=true")
         return redirect(url_for("W1"))
 
+    # post時
     if request.method == "POST":
-        # 課題追加ボタン押下時
+        # 課題追加ボタン押下時(htmlフォームからpost)
         if request.form.get("addTask", None) != None:
             return redirect(url_for("W6"))
-        # 更新ボタン押下時
+        # 更新ボタン押下時(htmlフォームからpost)
         elif request.form.get("update", None) != None:
+            nowDay = datetime.datetime.now().isoformat()[:10]  # 本日(YYYY-MM-DD)
             session["restTime"] = request.form.get("restTime", None)
             return render_template(
                 "W2.html",
                 restTime=session["restTime"],
-                mustDoList=C1.mustDo(
-                    session["userID"],
-                    datetime.datetime.now().isoformat()[:10],
-                    session["restTime"],
-                ),
-                toDoList=C1.taskQuery(
-                    session["userID"], datetime.datetime.now().isoformat()[:10], "over"
-                ),
-                planEvents=C1.planQuery(
-                    session["userID"], datetime.datetime.now().isoformat()[:10], "all"
-                ),
-                taskEvents=C1.taskQuery(
-                    session["userID"], datetime.datetime.now().isoformat()[:10], "all"
-                ),
+                mustDoList=C1.mustDo(session["userID"], nowDay, session["restTime"]),
+                toDoList=C1.taskQuery(session["userID"], nowDay, "over"),
+                planEvents=C1.planQuery(session["userID"], nowDay, "all"),
+                taskEvents=C1.taskQuery(session["userID"], nowDay, "all"),
+                month=session["date"],
             )
-        # 日付ボタン押下時
+        # 日付ボタン押下時(jQueryからpost)
         else:
             dictKeys = request.form.keys()
             resDate = ""
             for key in dictKeys:
                 resDate = key
-            return resDate[:10]  # jqueryでの応答によるリダイレクト・レンダーはできないため日付を返しjqueryで遷移
+            return resDate[:10]  # 日付を返し日付のW3へjQueryで遷移
 
+    # 通常読み込み時
     if request.method == "GET":
+        nowDay = datetime.datetime.now().isoformat()[:10]  # 本日(YYYY-MM-DD)
+        # 休憩時間・mustDoリスト・toDoList・予定情報(全日程)・課題情報(全日程)を引数にW2へ遷移
         return render_template(
             "W2.html",
             restTime=session["restTime"],
-            mustDoList=C1.mustDo(
-                session["userID"],
-                datetime.datetime.now().isoformat()[:10],
-                session["restTime"],
-            ),
-            toDoList=C1.taskQuery(
-                session["userID"], datetime.datetime.now().isoformat()[:10], "over"
-            ),
-            planEvents=C1.planQuery(
-                session["userID"], datetime.datetime.now().isoformat()[:10], "all"
-            ),
-            taskEvents=C1.taskQuery(
-                session["userID"], datetime.datetime.now().isoformat()[:10], "all"
-            ),
+            mustDoList=C1.mustDo(session["userID"], nowDay, session["restTime"]),
+            toDoList=C1.taskQuery(session["userID"], nowDay, "over"),
+            planEvents=C1.planQuery(session["userID"], nowDay, "all"),
+            taskEvents=C1.taskQuery(session["userID"], nowDay, "all"),
+            month=session["date"],
         )
 
 
+# 予定・課題の確認画面
 @app.route("/homeDetails/<date>", methods=["GET", "POST"])
 def W3(date):
     # 非ログイン時
@@ -120,9 +115,40 @@ def W3(date):
         print("status!=true")
         return redirect(url_for("W1"))
 
-    return render_template("W3.html")
+    # post時
+    if request.method == "POST":
+        # 予定欄の編集ボタン押下時
+        if request.form.get("planEdit", None) != None:
+            return redirect(url_for("W4", date=date))
+        # 課題欄の編集ボタン押下時
+        elif request.form.get("taskEdit", None) != None:
+            return redirect(url_for("W5", date=date))
+        # 戻るボタン押下
+        elif request.form.get("back", None) != None:
+            return redirect(url_for("W2"))
+        # 日付ボタン押下
+        else:
+            dictKeys = request.form.keys()
+            resDate = ""
+            for key in dictKeys:
+                resDate = key
+            return resDate[:10]  # 日付を返し日付のW3へjQueryで遷移
+
+    # 通常読み込み時
+    if request.method == "GET":
+        # 休憩時間・mustDoリスト・toDoList・予定情報(全日程)・課題情報(全日程)を引数にW2へ遷移
+        return render_template(
+            "W3.html",
+            planEvents=C1.planQuery(session["userID"], date, "all"),
+            taskEvents=C1.taskQuery(session["userID"], date, "all"),
+            planTheDate=C1.planQuery(session["userID"], date, "day"),
+            taskTheDate=C1.taskQuery(session["userID"], date, "day"),
+            date=date,
+            month=session["date"],
+        )
 
 
+# 予定編集画面
 @app.route("/planDetails/<date>", methods=["GET", "POST"])
 def W4(date):
     # 非ログイン時
@@ -139,6 +165,7 @@ def W4(date):
     return render_template("W4.html", existedPlans=existedPlans)
 
 
+# 課題編集画面
 @app.route("/taskDetails/<date>", methods=["GET", "POST"])
 def W5(date):
     # 非ログイン時
@@ -155,6 +182,7 @@ def W5(date):
     return render_template("W5.html", existedTasks=existedTasks)
 
 
+# 課題追加画面
 @app.route("/taskAddition", methods=["GET", "POST"])
 def W6():
     # 非ログイン時
@@ -168,6 +196,21 @@ def W6():
         return redirect(url_for("W2"))
 
     return render_template("W6.html")
+
+
+@app.route("/home/moveMonth", methods=["POST"])
+def moveMonth():
+    nowdate = datetime.datetime.strptime(session["date"], "%Y-%m-%d")
+
+    resMessage = request.get_data()
+    resMessage = resMessage.decode()
+    if resMessage == "+":
+        nowdate += relativedelta(months=1)
+    else:
+        nowdate -= relativedelta(months=1)
+    nowdate = nowdate.isoformat()[:10]
+    session["date"] = nowdate
+    return nowdate
 
 
 # W4で呼ばれる
@@ -246,58 +289,10 @@ def taskEdit():
     return result
 
 
-'''
-# YYYY-MM-DDの形でpost
-@app.route("/plan/query", methods=["POST"])
-def planQuery():
-    """
-    機能概要:
-        要求された日付のデータを返す
-
-        引数:
-            クライアント側から'YYYY-MM-DD'の形でpostされる
-
-        戻り値:
-            要求された日付のデータをリストとして返す
-
-    """
-
-    # 指定日のplanを返す
-    orderDate = request.get_data()  # バイト文字列
-    orderDate = orderDate.decode()  # バイト文字からテキスト文字列へ
-    orderDataList = C1.planQuery(session["userID"], orderDate, False)
-    return orderDataList
-
-
-# YYYY-MM-DDの形でpost
-@app.route("/task/query", methods=["POST"])
-def taskQuery():
-    """
-    機能概要:
-        要求された日付のデータを返す
-
-        引数:
-            クライアント側から'YYYY-MM-DD'の形でpostされる
-
-        戻り値:
-            要求された日付のデータをリストとして返す
-
-    """
-
-    # 指定日のtaskを返す
-    orderDate = request.get_data()  # バイト文字列
-    orderDate = orderDate.decode()  # バイト文字からテキスト文字列へ
-    orderDataList = C1.taskQuery(session["userID"], orderDate, False)
-    return orderDataList
-
-
-# YYYY-MM-DDの形でpost, mustDoリストを返す(titleが入ったリスト)
-@app.route("/mustDo/query", methods=["POST"])
-def mustDoQuery():
-    orderDate = request.get_data()  # バイト文字列
-    orderDate = orderDate.decode()  # バイト文字からテキスト文字列へ
-    return C1.mustDo(session["userID"], orderDate, int(session["restTime"]))
-'''
+# 指定されていないurlにアクセスしたとき
+@app.errorhandler(404)
+def errorPage(error):
+    return redirect(url_for("W1"))
 
 
 if __name__ == "__main__":
