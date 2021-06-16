@@ -1,8 +1,8 @@
-"""
-***Designer:山川
-***Date:2021.6.6
-***Purpose:サーバー側プログラム
-"""
+################################
+###Designer:山川
+###Date:2021.6.6
+###Purpose:サーバー側プログラム
+################################
 from flask import (
     Flask,
     render_template,
@@ -12,10 +12,10 @@ from flask import (
     request,
     session,
 )  # 追加
-import ast
 import json
 import os
 import sqlite3
+import datetime
 import C1
 
 planConn = sqlite3.connect("db/plans.db")
@@ -23,85 +23,178 @@ taskConn = sqlite3.connect("db/tasks.db")
 userConn = sqlite3.connect("db/users.db")
 
 app = Flask(__name__)
-page = "W1"
-app.secret_key = os.urandom(16)
+app.secret_key = os.urandom(16)  # Cookie暗号化に使用
 
-# テスト用
-@app.route("/test")
-def test():
-    session["userID"] = "123456"
-    session["password"] = "qwerty"
-    session["status"] = "True"
-    session["restTime"] = "7"
-    return redirect(url_for("home"))
-
-
+# ログイン画面
 @app.route("/login", methods=["GET", "POST"])
-def login():
+def W1():
+    session["restTime"] = 13  # defaultの休憩時間を設定
+
+    # post時(htmlフォームからpost)
+    if request.method == "POST":
+        # loginボタン押下時
+        if request.form.get("login"):
+            return C1.requestLogin(
+                request.form.get("email"), request.form.get("password")
+            )
+        # registerボタン押下時
+        elif request.form.get("register"):
+            return C1.requestAddUser(
+                request.form.get("email"), request.form.get("password")
+            )
+        # その他はエラー
+        else:
+            return "error"
+
+    # 通常読み込み時
     if request.method == "GET":
         return render_template("W1.html")
-    else:
-        return C1.requestLogin(request.form.get("email"), request.form.get("password"))
 
 
-@app.route("/login/addUser", methods=["POST"])
-def addUser():
-    return C1.requestAddUser(request.form.get("email"), request.form.get("password"))
-
-
+# 初期画面
 @app.route("/home", methods=["GET", "POST"])
-def home():
-    """
-    機能概要
-    """
-    title = "home"
+def W2():
+    # 非ログイン時
+    if not "status" in session.keys():
+        print("non status")
+        return redirect(url_for("W1"))
+    if session["status"] != "True":
+        print("status!=true")
+        return redirect(url_for("W1"))
 
-    # 初回?
-    if request.method != "POST":
-        return render_template("home.html", title=title)
-    # ボタンで画面遷移
-    else:
-        # 画面遷移request
-        if request.form.get("send") not in ("決定", "戻る"):
-            page = request.form.get("send", None)
-            # messageを与えるとエラーalart(E1,E2,・・・,E8)
+    # post時
+    if request.method == "POST":
+        # 課題追加ボタン押下時(htmlフォームからpost)
+        if request.form.get("addTask", None) != None:
+            return redirect(url_for("W6"))
+        # 更新ボタン押下時(htmlフォームからpost)
+        elif request.form.get("update", None) != None:
+            nowDay = datetime.datetime.now().isoformat()[:10]  # 本日(YYYY-MM-DD)
+            session["restTime"] = request.form.get("restTime", None)
             return render_template(
-                page + ".html",
-                title=page,  # htmlのtitleにpage名を渡す
-                # message="E1",
-                existedPlans=[  # 既に存在している予定
-                    {
-                        "start": "2021-06-10T15:37",
-                        "end": "2021-07-10T15:01",
-                        "title": "test1",
-                        "planID": "111fd1111",
-                    },
-                    {
-                        "start": "2022-06-10T15:37",
-                        "end": "2022-07-10T15:01",
-                        "title": "test2",
-                        "planID": "22222222",
-                    },
-                ],
-                existedTasks=[  # 既に存在している課題
-                    {
-                        "due": "2021-06-10T15:37",
-                        "need": "7",
-                        "title": "test1",
-                        "taskID": "111fd1111",
-                    },
-                    {
-                        "due": "2022-06-10T15:37",
-                        "need": "4",
-                        "title": "test2",
-                        "taskID": "22222222",
-                    },
-                ],
+                "W2.html",
+                restTime=session["restTime"],
+                mustDoList=C1.mustDo(session["userID"], nowDay, session["restTime"]),
+                toDoList=C1.taskQuery(session["userID"], nowDay, "over"),
+                planEvents=C1.planQuery(session["userID"], nowDay, "all"),
+                taskEvents=C1.taskQuery(session["userID"], nowDay, "all"),
             )
+        # 日付ボタン押下時(jQueryからpost)
         else:
-            return render_template("home.html")
+            dictKeys = request.form.keys()
+            resDate = ""
+            for key in dictKeys:
+                resDate = key
+            return resDate[:10]  # 日付を返し日付のW3へjQueryで遷移
+
+    # 通常読み込み時
+    if request.method == "GET":
+        nowDay = datetime.datetime.now().isoformat()[:10]  # 本日(YYYY-MM-DD)
+        # 休憩時間・mustDoリスト・toDoList・予定情報(全日程)・課題情報(全日程)を引数にW2へ遷移
+        return render_template(
+            "W2.html",
+            restTime=session["restTime"],
+            mustDoList=C1.mustDo(session["userID"], nowDay, session["restTime"]),
+            toDoList=C1.taskQuery(session["userID"], nowDay, "over"),
+            planEvents=C1.planQuery(session["userID"], nowDay, "all"),
+            taskEvents=C1.taskQuery(session["userID"], nowDay, "all"),
+        )
 
 
+# 予定・課題の確認画面
+@app.route("/homeDetails/<date>", methods=["GET", "POST"])
+def W3(date):
+    # 非ログイン時
+    if not "status" in session.keys():
+        print("non status")
+        return redirect(url_for("W1"))
+    if session["status"] != "True":
+        print("status!=true")
+        return redirect(url_for("W1"))
+
+    # post時
+    if request.method == "POST":
+        # 予定欄の編集ボタン押下時
+        if request.form.get("planEdit", None) != None:
+            return redirect(url_for("W4", date=date))
+        # 課題欄の編集ボタン押下時
+        elif request.form.get("taskEdit", None) != None:
+            return redirect(url_for("W5", date=date))
+        # 戻るボタン押下
+        elif request.form.get("back", None) != None:
+            return redirect(url_for("W2"))
+        # 日付ボタン押下
+        else:
+            dictKeys = request.form.keys()
+            resDate = ""
+            for key in dictKeys:
+                resDate = key
+            return resDate[:10]  # 日付を返し日付のW3へjQueryで遷移
+
+    # 通常読み込み時
+    if request.method == "GET":
+        # 休憩時間・mustDoリスト・toDoList・予定情報(全日程)・課題情報(全日程)を引数にW2へ遷移
+        return render_template(
+            "W3.html",
+            planEvents=C1.planQuery(session["userID"], date, "all"),
+            taskEvents=C1.taskQuery(session["userID"], date, "all"),
+            planTheDate=C1.planQuery(session["userID"], date, "day"),
+            taskTheDate=C1.taskQuery(session["userID"], date, "day"),
+            date=date,
+        )
+
+
+# 予定編集画面
+@app.route("/planDetails/<date>", methods=["GET", "POST"])
+def W4(date):
+    # 非ログイン時
+    if not "status" in session.keys():
+        return redirect(url_for("W1"))
+    if session["status"] != "True":
+        return redirect(url_for("W1"))
+
+    # 戻るボタン
+    if request.form.get("send"):
+        return redirect(url_for("W3", date=date))
+
+    existedPlans = C1.planQuery(session["userID"], date, "day")
+    return render_template("W4.html", existedPlans=existedPlans)
+
+
+# 課題編集画面
+@app.route("/taskDetails/<date>", methods=["GET", "POST"])
+def W5(date):
+    # 非ログイン時
+    if not "status" in session.keys():
+        return redirect(url_for("W1"))
+    if session["status"] != "True":
+        return redirect(url_for("W1"))
+
+    # 戻るボタン
+    if request.form.get("send"):
+        return redirect(url_for("W3", date=date))
+
+    existedTasks = C1.taskQuery(session["userID"], date, "day")
+    return render_template("W5.html", existedTasks=existedTasks)
+
+
+# 課題追加画面
+@app.route("/taskAddition", methods=["GET", "POST"])
+def W6():
+    # 非ログイン時
+    if not "status" in session.keys():
+        return redirect(url_for("W1"))
+    if session["status"] != "True":
+        return redirect(url_for("W1"))
+
+    # 戻るボタン
+    if request.form.get("send"):
+        return redirect(url_for("W2"))
+
+    return render_template("W6.html")
+
+
+# W4で呼ばれる
 # postは{"start":"・・・", "end":"・・・", "title":"・・・", "planID":"・・・"}の形
 @app.route("/plan/edit", methods=["POST"])
 def planEdit():
@@ -139,6 +232,7 @@ def planEdit():
     return result
 
 
+# W5,6で呼ばれる
 # postは{"due":"・・・", "need":"・・・", "title":"・・・", "taskID":"・・・"}の形
 @app.route("/task/edit", methods=["POST"])
 def taskEdit():
@@ -176,65 +270,14 @@ def taskEdit():
     return result
 
 
-# YYYY-MM-DDの形でpost
-@app.route("/plan/query", methods=["POST"])
-def planQuery():
-    """
-    機能概要:
-        要求された日付のデータを返す
-
-        引数:
-            クライアント側から'YYYY-MM-DD'の形でpostされる
-
-        戻り値:
-            要求された日付のデータをリストとして返す
-
-    """
-
-    # 指定日のplanを返す
-    orderDate = request.get_data()  # バイト文字列
-    orderDate = orderDate.decode()  # バイト文字からテキスト文字列へ
-    orderDataList = C1.planQuery(session["userID"], orderDate, False)
-    return orderDataList
-
-
-# YYYY-MM-DDの形でpost
-@app.route("/task/query", methods=["POST"])
-def taskQuery():
-    """
-    機能概要:
-        要求された日付のデータを返す
-
-        引数:
-            クライアント側から'YYYY-MM-DD'の形でpostされる
-
-        戻り値:
-            要求された日付のデータをリストとして返す
-
-    """
-
-    # 指定日のtaskを返す
-    orderDate = request.get_data()  # バイト文字列
-    orderDate = orderDate.decode()  # バイト文字からテキスト文字列へ
-    orderDataList = C1.taskQuery(session["userID"], orderDate, False)
-    return orderDataList
-
-
-# YYYY-MM-DDの形でpost, mustDoリストを返す(titleが入ったリスト)
-@app.route("/mustDo/query", methods=["POST"])
-def mustDoQuery():
-    orderDate = request.get_data()  # バイト文字列
-    orderDate = orderDate.decode()  # バイト文字からテキスト文字列へ
-    return C1.mustDo(session["userID"], orderDate, int(session["restTime"]))
-
-
-# 定義していないurl
+# 指定されていないurlにアクセスしたとき
 @app.errorhandler(404)
-def pageNotFound(error):
-    return "404 not found."
+def errorPage(error):
+    return redirect(url_for("W1"))
 
 
 if __name__ == "__main__":
+    print("test用モード・debug=True")
     app.run(
         debug=True
     )  ###############host='0.0.0.0'とport=とthreaded=True,debug=Falseを指定する

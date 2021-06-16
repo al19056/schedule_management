@@ -1,4 +1,140 @@
 {% extends "layout.html" %}
 {% block content %}
-<h3 class="hi">W3</h3>
+
+<link rel='stylesheet' href='../static/lib/main.css' />
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src='../static/lib/main.js'></script>
+<style>
+  th.fc-day-sat {
+    background-color: #eaf4ff;
+  }
+
+  th.fc-day-sun {
+    background-color: #ffeaea;
+  }
+
+  td.fc-day-sat {
+    background-color: #eaf4ff;
+  }
+
+  td.fc-day-sun {
+    background-color: #ffeaea;
+  }
+
+  .planColor {
+    background-color: rgb(0, 204, 255);
+  }
+
+  .taskColor {
+    background-color: rgb(255, 187, 0);
+  }
+
+  .btn-edit {
+    background-color: blanchedalmond;
+  }
+
+  .btn-back {
+    background-color: rgba(99, 134, 102, 0.493);
+  }
+</style>
+<script type="text/javascript">
+  //予定情報をeventListに追加
+  var eventsList = [];
+  {% if planEvents %}
+  {% for plan in planEvents %}
+  eventsList.push({ start: {{ plan["start"]| tojson }}, title: {{ plan["title"]| tojson }}, color: "blue", className: ["planColor"]})
+  {% endfor %}
+  {% endif %}
+  //課題情報をeventListに追加
+  {% if taskEvents %}
+  {% for task in taskEvents %}
+  eventsList.push({ start: {{ task['due']| tojson }}, title: {{ task['title']| tojson }}, color: 'red', className: ['taskColor']})
+  {% endfor %}
+  {% endif %}
+
+  //カレンダー表示
+  document.addEventListener('DOMContentLoaded', function () {
+    var calendarEl = document.getElementById('calendar');
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+      locale: 'ja',
+      height: window.innerHeight * 0.9,
+      dayMaxEvents: true,
+      headerToolbar: {
+        left: "prev",
+        center: "title",
+        right: "today next"
+      },
+      buttonText: {
+        today: '今月',
+        month: '月',
+        list: 'リスト'
+      },
+      dayCellContent: function (e) {
+        e.dayNumberText = e.dayNumberText.replace('日', '');
+      },
+      displayEventTime: false,
+      businessHours: false,
+      editable: false,
+      initialDate: "{{ date }}",
+      //日付クリック時に日付をpost
+      dateClick: function (info) {
+        $.post("{{url_for('W3',date=date)}}", info.dateStr)
+          .done(function (data) {
+            window.location.href = "/homeDetails/" + data;
+          })
+      },
+      //予定情報クリック時に日付をpost
+      eventClick: function (info) {
+        $.post("{{url_for('W3',date=date)}}", info.event.startStr)
+          .done(function (data) {
+            window.location.href = "/homeDetails/" + data;
+          })
+      },
+      events: eventsList
+    });
+
+    calendar.render();
+  });
+
+
+</script>
+
+<!--画面右部 休憩時間・MustDoリスト・ToDoリスト・課題追加ボタン表示-->
+<!--休憩時間・課題追加ボタンpost-->
+<div id="calendar" class="col-sm-8"></div>
+<div class="col-sm-4">
+  <form action="/homeDetails/{{date}}" method="POST">
+    <div class="">
+    </div>
+    <div class="planList text-center">
+      <p></p>
+      <label>当日の予定</label>
+      <textarea class="form-control" rows="17" readonly wrap="off" style="font: size 1.3em;">
+        {% for plan in planTheDate %}
+        {{plan['title']}}
+        {% endfor %}
+        </textarea>
+      <input type="submit" name="planEdit" value="編集" class="btn-block btn-edit btn-lg">
+    </div>
+    <div>
+    </div>
+    <div class="taskList text-center">
+      <div>
+        <p></p>
+        <label>当日締切の課題</label>
+      </div>
+      <textarea class="form-control" rows="17" readonly wrap="off" style="font: size 1.3em;">
+      {% for task in taskTheDate %}
+      {{task['title']}}
+      {% endfor %}
+      </textarea>
+      <input type="submit" name="taskEdit" value="編集" class="btn-block btn-edit btn-lg">
+    </div>
+
+    <div class="btn-lg row">
+      <p></p>
+      <input type="submit" name="back" value="戻る" class="btn-block btn-back btn-lg">
+    </div>
+  </form>
+</div>
 {% endblock %}
