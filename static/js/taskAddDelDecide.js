@@ -56,7 +56,7 @@ function taskDeleteForm(thisObj) {
   var id = target.find('#taskID').val();
   //idがあるとき(登録済みの課題を削除)
   if (id != "") {
-    //削除するidをpost
+    //削除するidをpost(他は空文字)
     $.post('/task/edit', '{"due":"","need":"","title":"","taskID":"' + id + '"}')
       .done(function (data) {
         if (data == "success del") {
@@ -68,7 +68,6 @@ function taskDeleteForm(thisObj) {
         else { alert(data) }
       })
   }
-  //欄の削除
   //2行以上の時の削除
   if (target.parent().children().length > 1) {
     target.remove();
@@ -81,6 +80,7 @@ function taskDeleteForm(thisObj) {
       .val("")
   }
 }
+
 function postTaskEdit(thisObj) {
   /*
     thisObjのフォームに入力されている情報をpost(JSON形式)
@@ -91,6 +91,7 @@ function postTaskEdit(thisObj) {
     戻り値：
       なし
   */
+  //postようきゅの返信待ちでないとき
   if (nowDoing == false) {
     nowDoing = true;
     var due = $(thisObj).parent().parent().find("#due").val();
@@ -99,12 +100,13 @@ function postTaskEdit(thisObj) {
     var id = $(thisObj).parent().parent().find("#taskID").val();
     var idFind = $(thisObj).parent().parent().find("#taskID")
 
+    //必要情報の欠如、必要時間が0以下の時エラーアラート
     if (due == "" || need == "" || taskName == "" || need <= "0") {
       nowDoing = false;
       alert("正しい値を入力してください")
       return;
     }
-    var resStr = "{'due':'" + due + "','need':'" + need + "','title':'" + taskName + "','taskID':'" + id + "'}"
+    var resStr = "{'due':'" + due + "','need':'" + need + "','title':'" + taskName + "','taskID':'" + id + "'}"//post用json文字列
     $.post('/task/edit', resStr)
       .done(function (data) {
         if (data == 'success update') {

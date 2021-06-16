@@ -3,9 +3,12 @@
 ###***Date:2021.6.11
 ###***Purpose:C1コンポーネント(サーバサイドの関数のみ)
 #####################################################
-import testC2 as C2
-import testC3 as C3
-import testC4 as C4
+# import testC2 as C2
+# import testC3 as C3
+# import testC4 as C4
+import C2
+import C3
+import C4
 from flask import redirect, session, url_for
 import datetime
 import hashlib

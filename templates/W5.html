@@ -7,7 +7,7 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
 
-
+<!--課題情報編集フォーム-->
 <div class="task">
   <form method="POST" class=task-form enctype="multipart/form-data">
     <div class="tasks" id="tasks">
@@ -53,7 +53,7 @@
 </div>
 
 
-<!--既に予定がある時-->
+<!--既に課題がある時-->
 {% if existedTasks %}
 {% for task in existedTasks[::-1] %}
 <script type="text/javascript">

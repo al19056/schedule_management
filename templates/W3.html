@@ -95,14 +95,7 @@
 
     calendar.render();
   });
-  $('body').on('click', 'button.fc-prev-button', function () {
-    $.post("{{url_for('moveMonth')}}", "-")
-      .done()
-  })
-  $('body').on('click', 'button.fc-next-button', function () {
-    $.post("{{url_for('moveMonth')}}", "+")
-      .done()
-  })
+
 
 </script>
 

@@ -39,9 +39,10 @@ function planAddForm() {
     '</div>')
     .appendTo("#plans");
 }
+
 function planDeleteForm(thisObj) {
   /*
-    登録済みの予定の時は削除要求をpost
+    削除ボタン押下時、登録済みの予定の時は削除要求をpost
     その後
       2行以上欄がある:その行を削除
       1行しかない    :その行をクリア
@@ -54,9 +55,10 @@ function planDeleteForm(thisObj) {
   */
   var target = $(thisObj).parent().parent(); //target is plan-info class
   var id = target.find('#planID').val();
+
   //idがあるとき(登録済みの予定を削除)
   if (id != "") {
-    //削除するidをpost
+    //削除するidをpost(他は空文字)
     $.post('/plan/edit', '{"start":"","end":"","title":"","planID":"' + id + '"}')
       .done(function (data) {
         if (data == "success del") {
@@ -68,7 +70,7 @@ function planDeleteForm(thisObj) {
         else { alert(data) }
       })
   }
-  //欄の削除
+
   //2行以上の時の削除
   if (target.parent().children().length > 1) {
     target.remove();
@@ -81,6 +83,7 @@ function planDeleteForm(thisObj) {
       .val("")
   }
 }
+
 function postPlanEdit(thisObj) {
   /*
     thisObjのフォームに入力されている情報をpost(JSON形式)
@@ -91,6 +94,7 @@ function postPlanEdit(thisObj) {
     戻り値：
       なし
   */
+  //post要求の返信待ちでないとき
   if (nowDoing == false) {
     nowDoing = true;
     var start = $(thisObj).parent().parent().find("#start").val();
@@ -99,6 +103,7 @@ function postPlanEdit(thisObj) {
     var id = $(thisObj).parent().parent().find("#planID").val();
     var idFind = $(thisObj).parent().parent().find("#planID")
 
+    //必要情報の欠如、時間矛盾、同一日内に終わらない予定の時エラーアラート
     if (start == "" || end == "" || planName == "" || start >= end || start.substr(0, 10) != end.substr(0, 10)) {
       nowDoing = false;
       if (start.substr(0, 10) == end.substr(0, 10)) {
@@ -109,7 +114,7 @@ function postPlanEdit(thisObj) {
       }
       return;
     }
-    var resStr = "{'start':'" + start + "','end':'" + end + "','title':'" + planName + "','planID':'" + id + "'}"
+    var resStr = "{'start':'" + start + "','end':'" + end + "','title':'" + planName + "','planID':'" + id + "'}" //post用json文字列
     $.post('/plan/edit', resStr)
       .done(function (data) {
         if (data == 'success update') {

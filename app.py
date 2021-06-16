@@ -16,7 +16,6 @@ import json
 import os
 import sqlite3
 import datetime
-from dateutil.relativedelta import relativedelta
 import C1
 
 planConn = sqlite3.connect("db/plans.db")
@@ -30,7 +29,7 @@ app.secret_key = os.urandom(16)  # Cookie暗号化に使用
 @app.route("/login", methods=["GET", "POST"])
 def W1():
     session["restTime"] = 13  # defaultの休憩時間を設定
-    session["date"] = datetime.datetime.now().isoformat()[:10]
+
     # post時(htmlフォームからpost)
     if request.method == "POST":
         # loginボタン押下時
@@ -79,7 +78,6 @@ def W2():
                 toDoList=C1.taskQuery(session["userID"], nowDay, "over"),
                 planEvents=C1.planQuery(session["userID"], nowDay, "all"),
                 taskEvents=C1.taskQuery(session["userID"], nowDay, "all"),
-                month=session["date"],
             )
         # 日付ボタン押下時(jQueryからpost)
         else:
@@ -100,7 +98,6 @@ def W2():
             toDoList=C1.taskQuery(session["userID"], nowDay, "over"),
             planEvents=C1.planQuery(session["userID"], nowDay, "all"),
             taskEvents=C1.taskQuery(session["userID"], nowDay, "all"),
-            month=session["date"],
         )
 
 
@@ -144,7 +141,6 @@ def W3(date):
             planTheDate=C1.planQuery(session["userID"], date, "day"),
             taskTheDate=C1.taskQuery(session["userID"], date, "day"),
             date=date,
-            month=session["date"],
         )
 
 
@@ -196,21 +192,6 @@ def W6():
         return redirect(url_for("W2"))
 
     return render_template("W6.html")
-
-
-@app.route("/home/moveMonth", methods=["POST"])
-def moveMonth():
-    nowdate = datetime.datetime.strptime(session["date"], "%Y-%m-%d")
-
-    resMessage = request.get_data()
-    resMessage = resMessage.decode()
-    if resMessage == "+":
-        nowdate += relativedelta(months=1)
-    else:
-        nowdate -= relativedelta(months=1)
-    nowdate = nowdate.isoformat()[:10]
-    session["date"] = nowdate
-    return nowdate
 
 
 # W4で呼ばれる
@@ -296,6 +277,7 @@ def errorPage(error):
 
 
 if __name__ == "__main__":
+    print("test用モード・debug=True")
     app.run(
         debug=True
     )  ###############host='0.0.0.0'とport=とthreaded=True,debug=Falseを指定する
