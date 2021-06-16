@@ -35,7 +35,7 @@ def CIR(userID,password):
     #userIDとpasswordを各々のlistに追加する
     userIDlist.append(userID)
     passwordlist.append(password)
-    
+
     """
     file1.txt ----> userIDのデータを保存する
     file2.txt ----> passwordのデータを保存する
@@ -74,19 +74,24 @@ def CISu():
     userIDの情報をC2 認証処理部にデータを送る
     戻り値　:　userIDlist
     """
+
+    #list1 ---> userIDのlistを格納するためのlist
     #file1.txtが存在しない場合
     if os.path.exists('file1.txt') is False:
         #file1.txtを作り、その後読み込み状態にする
         f3 = open("file1.txt","w")
         f3.close()
         f4 = open("file1.txt","r")
-        return f4.readlines()      #f4をlist型の状態で返す
+        list1 = f4.readlines()    #f4をlist型にして、list1に渡す
+        f4.close()
+        return list1      
     #file1.txtが存在する場合
     else:
         #file1.txtを読み込み状態にする    
         f3 = open("file1.txt","r")
-        return f3.readlines()      #f3をlist型の状態で返す
-
+        list1 = f3.readlines()    #f3をlist型にして、list1に渡す
+        f3.close() 
+        return list1      #f3をlist型の状態で返す
 
 #CustomerInformationSuvey(password) 顧客情報調査(password)
 def CISp():
@@ -94,9 +99,11 @@ def CISp():
     passwordの情報をC2 認証処理部にデータを送る
     戻り値: passwordlist
     """
-        
+    #list2 ---> passwordのlistを格納するためのlist    
     #最初からfile2を読み込み状態にする
     f5 = open("file2.txt","r")
-    return f5.readlines()      #f5をlist型の状態で返す
-        
+    list2 = f5.readlines() #f5をlist型にして、list2に渡す
+    f5.close()
+    return list2          
+
 
