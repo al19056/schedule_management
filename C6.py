@@ -10,7 +10,7 @@ import sqlite3
 import uuid
 
 
-def taskQuerySub(userID,orderData)
+def taskQuerySub(userID,orderData):
     """
     機能概要    :指定日の課題の情報を検索する.
 
@@ -31,6 +31,7 @@ def taskQuerySub(userID,orderData)
     
     #戻り値のリストへ指定された順番に代入
     newList=[[]]
+
     for x in range(len(tempList)):
         newList.append=[{"due":tempList[x][1], "need":tempList[x][2], "title":tempList[x][3], "taskID":tempList[x][4]}]
     cur.close()
