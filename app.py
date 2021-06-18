@@ -17,9 +17,14 @@ import sqlite3
 import datetime
 import C1
 
-planConn = sqlite3.connect("db/plans.db")
-taskConn = sqlite3.connect("db/tasks.db")
-userConn = sqlite3.connect("db/users.db")
+try:
+    planConn = sqlite3.connect("db/plans.db")
+    taskConn = sqlite3.connect("db/tasks.db")
+    userConn = sqlite3.connect("db/users.db")
+except sqlite3.Error as err:
+    print("catch error:", err)
+    exit()
+
 
 app = Flask(__name__)
 app.secret_key = os.urandom(16)  # Cookie暗号化に使用
