@@ -25,13 +25,14 @@ def taskQuerySub(userID,orderData):
         成功:
             newList(list):指定日の課題リスト
     """
+
+    #課題情報データーベースに登録された課題の検索
     cur=taskConn.Cursor()
     cur.execute('SELECT * FROM task.db WHERE orderDate='+str(due[0:10])+'AND userID='+str(userID))
     tempList=cur.fetchall()
     
-    #戻り値のリストへ指定された順番に代入
+    #戻り値のリストに代入
     newList=[[]]
-
     for x in range(len(tempList)):
         newList.append=[{"due":tempList[x][1], "need":tempList[x][2], "title":tempList[x][3], "taskID":tempList[x][4]}]
     cur.close()
@@ -56,8 +57,10 @@ def taskEditSub(userID,due,need,title,taskID):
         成功:
             newTaskID   :新たな課題のID
     """
-    if a==1:
-        newTaskID=str(uuid.uuid4())
+
+    #課題の情報を追加
+    if taskID == None: 
+        newTaskID=str(uuid.uuid4())　#taskIDを乱数を用いて定義
 
         cur=taskConn.Cursor()
         cur.execute('INSERT INTO task.db values('+str(userID)+','+str(due)+','+str(need)+','+str(title)+','+str(newTaskID)+')')
@@ -65,7 +68,8 @@ def taskEditSub(userID,due,need,title,taskID):
 
         return newTaskID
 
-    elif a==2:
+    #課題の情報を削除
+    elif due == None: 
         newTaskID=taskID
 
         cur=taskConn.Cursor()
@@ -74,14 +78,12 @@ def taskEditSub(userID,due,need,title,taskID):
 
         return newTaskID
 
-    else:
-        newDue=due
-        newNeed=need
-        newTitle=title
+    #課題の情報を変更
+    else: 
         newTaskID=taskID
 
         cur=taskConn.Cursor()
-        cur.execute('UPDATE task.db SET due='+str(newDue)+',need='+str(newNeed)+',title='+str(newTitle)+ 'WHERE taskID='+str(newTaskID))
+        cur.execute('UPDATE task.db SET due='+str(due)+',need='+str(need)+',title='+str(title)+ 'WHERE taskID='+str(newTaskID))
         cur.close()
 
         return newTaskID
@@ -101,11 +103,13 @@ def taskQueryManySub(userID,orderData):
         成功:
             newList(list):指定日の課題リスト
     """
+
+    #課題情報データーベースに登録された課題の検索
     cur=taskConn.Cursor()
     cur.execute('SELECT * FROM task.db WHERE orderDate>='+str(due[0:10])+'AND userID='+str(userID))
     tempList=cur.fetchall()
     
-    #戻り値のリストへ指定された順番に代入
+    #戻り値のリストに代入
     newList=[[]]
     for x in range(len(tempList)):
         newList.append=[{"due":tempList[x][1], "need":tempList[x][2], "title":tempList[x][3], "taskID":tempList[x][4]}]
@@ -128,11 +132,13 @@ def taskQueryAllSub(userID):
         成功:
             newList(list):指定日の課題リスト
     """
+
+    #課題情報データーベースに登録された課題の検索
     cur=taskConn.Cursor()
     cur.execute('SELECT * FROM task.db WHERE userID='+str(userID))
     tempList=cur.fetchall()
     
-    #戻り値のリストへ指定された順番に代入
+    #戻り値のリストに代入
     newList=[[]]
     for x in range(len(tempList)):
         newList.append=[{"due":tempList[x][1], "need":tempList[x][2], "title":tempList[x][3], "taskID":tempList[x][4]}]
