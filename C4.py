@@ -18,6 +18,7 @@ def taskQuery(userID,orderData):
         成功:
             newList(list):指定日の課題リスト
     """
+
     newList=C6.taskQuerySub(userID,orderData)
     if newList==[[]]:
         return "failed"
@@ -39,6 +40,7 @@ def taskEdit(userID,due,need,title,taskID):
         成功:
             newTaskID   :更新後の課題ID
     """
+
     #課題の情報を追加
     if taskID == None: #追加時はtaskIDが存在しない
         newTaskID=C6.taskEditSub(userID,due,need,title,taskID)
@@ -72,6 +74,7 @@ def taskQueryMany(userID,orderData):
         成功:
             newList(list):指定日以降の課題リスト
     """
+
     newList=C6.taskQueryManySub(userID,orderData)
     if newList==[[]]:
         return "failed"
@@ -89,6 +92,7 @@ def taskQueryAll(userID):
         成功:
             newList(list):ユーザの全ての課題リスト
     """
+    
     newList=C6.taskQueryAllSub(userID)
     if newList==[[]]:
         return "failed"
