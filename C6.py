@@ -28,7 +28,7 @@ def taskQuerySub(userID,orderData):
 
     #課題情報データーベースに登録された課題の検索
     cur=taskConn.Cursor()
-    cur.execute('SELECT * FROM task.db WHERE orderDate='+str(due[0:10])+'AND userID='+str(userID))
+    cur.execute('SELECT * FROM tasks.db WHERE orderDate='+str(due[0:10])+'AND userID='+str(userID))
     tempList=cur.fetchall()
     
     #戻り値のリストに代入
@@ -63,7 +63,7 @@ def taskEditSub(userID,due,need,title,taskID):
         newTaskID=str(uuid.uuid4())　#taskIDを乱数を用いて定義
 
         cur=taskConn.Cursor()
-        cur.execute('INSERT INTO task.db values('+str(userID)+','+str(due)+','+str(need)+','+str(title)+','+str(newTaskID)+')')
+        cur.execute('INSERT INTO tasks.db values('+str(userID)+','+str(due)+','+str(need)+','+str(title)+','+str(newTaskID)+')')
         cur.close()
 
         return newTaskID
@@ -73,7 +73,7 @@ def taskEditSub(userID,due,need,title,taskID):
         newTaskID=taskID
 
         cur=taskConn.Cursor()
-        cur.execute('DELETE FROM task.db WHERE taskID='+str(newTaskID)+'AND userID='+str(userID))
+        cur.execute('DELETE FROM tasks.db WHERE taskID='+str(newTaskID)+'AND userID='+str(userID))
         cur.close()
 
         return newTaskID
@@ -106,7 +106,7 @@ def taskQueryManySub(userID,orderData):
 
     #課題情報データーベースに登録された課題の検索
     cur=taskConn.Cursor()
-    cur.execute('SELECT * FROM task.db WHERE orderDate>='+str(due[0:10])+'AND userID='+str(userID))
+    cur.execute('SELECT * FROM tasks.db WHERE orderDate>='+str(due[0:10])+'AND userID='+str(userID))
     tempList=cur.fetchall()
     
     #戻り値のリストに代入
@@ -135,7 +135,7 @@ def taskQueryAllSub(userID):
 
     #課題情報データーベースに登録された課題の検索
     cur=taskConn.Cursor()
-    cur.execute('SELECT * FROM task.db WHERE userID='+str(userID))
+    cur.execute('SELECT * FROM tasks.db WHERE userID='+str(userID))
     tempList=cur.fetchall()
     
     #戻り値のリストに代入
