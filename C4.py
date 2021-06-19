@@ -39,19 +39,21 @@ def taskEdit(userID,due,need,title,taskID):
         成功:
             newTaskID   :更新後の課題ID
     """
-    if taskID is None:
-        a=1    #追加
+    #課題の情報を追加
+    if taskID == None: #追加時はtaskIDが存在しない
         newTaskID=C6.taskEditSub(userID,due,need,title,taskID)
         if len(due)!=16 or len(need)>3 or len(title)>256 :
             return "failed"
         else: 
             return newTaskID
-    elif due is None:
-        a=2    #削除
+
+    #課題の情報を削除
+    elif due == None: #削除時はdue,need,titleが存在しない
         newTaskID=C6.taskEditSub(userID,due,need,title,taskID)
         return newTaskID
-    else:
-        a=3    #更新
+
+    #課題の情報を変更
+    else: 
         newTaskID=C6.taskEditSub(userID,due,need,title,taskID)
         if len(due)!=16 or len(need)>3 or len(title)>256 :
             return "failed"
