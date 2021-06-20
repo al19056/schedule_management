@@ -26,9 +26,11 @@ def planSearch(userIDArg,orderDateArg):
     tempList=cur.fetchall()
     
     #戻り値のリストへ指定された順番に代入
-    planList=[[]]
+    planList=[]
+    keys=['start','end','title','planID']
     for x in range(len(tempList)):
-        planList.append=[{"start":tempList[x][1], "end":tempList[x][2], "title":tempList[x][3], "planID":tempList[x][4]}]
+        values=[tempList[x][1],tempList[x][2],tempList[x][3],tempList[x][4]]
+        planList.append(dict(zip(keys,values)))
     
     cur.close()
 
@@ -147,10 +149,11 @@ def planSearchMany(userIDArg,orderDate):
     tempList=cur.fetchall()
 
     #戻り値のリストへ指定された順番に代入
-    planListMany=[[]]
+    planListMany=[]
+    keys=['start','end','title','planID']
     for x in range(len(tempList)):
-        planListMany.append=[{"start":tempList[x][1], "end":tempList[x][2], "title":tempList[x][3], "planID":tempList[x][4]}]
-    
+        values=[tempList[x][1],tempList[x][2],tempList[x][3],tempList[x][4]]
+        planListMany.append(dict(zip(keys,values)))
     cur.close()
 
     if(planListMany is None): #エラーの場合
@@ -176,9 +179,11 @@ def planSearchAll(userIDArg):
     tempList=cur.fetchall()
     
     #戻り値のリストへ指定された順番に代入
-    planListAll=[[]]
+    planListAll=[]
+    keys=['start','end','title','planID']
     for x in range(len(tempList)):
-        planListAll.append=[{"start":tempList[x][1], "end":tempList[x][2], "title":tempList[x][3], "planID":tempList[x][4]}]
+        values=[tempList[x][1],tempList[x][2],tempList[x][3],tempList[x][4]]
+        planListAll.append(dict(zip(keys,values)))
 
     cur.close()
 

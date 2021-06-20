@@ -5,20 +5,20 @@
 ##################################################
 
 #CustomerInformationRegistration 顧客情報登録
+import sys
 from typing import Counter
 import os
 
 
-userIDlist = []
-passwordlist = []
-#userIDlist : userIDの配列
-#passwordlist : passwordの配列 
+list1 = []
+list2 = []
+#list1 : 引数のuserIDを一時保存する
+#list2 : 引数のpasswordを一時保存する 
 # ここに各々のデータを格納する
 
 
 
 def CIR(userID,password):
-    import sys
     import math
     import argparse
     #userIDlist : userIDの配列
@@ -33,36 +33,36 @@ def CIR(userID,password):
 
     """
     #userIDとpasswordを各々のlistに追加する
-    userIDlist.append(userID)
-    passwordlist.append(password)
+    list1.append(userID)
+    list2.append(password)
 
     """
-    file1.txt ----> userIDのデータを保存する
-    file2.txt ----> passwordのデータを保存する
+    userIDfile.txt ----> userIDのデータを保存する
+    passwordfile.txt ----> passwordのデータを保存する
     """
 
-    #file1.txtを追記状態で開き、userIDを追加する
-    f1 = open("file1.txt","a")
-    f1.write(userID)
-    f1.write("\n")
-    f1.close
-    #file2.txtが存在しない場合
-    if os.path.exists('file2.txt') is False:
-        #file2.txtを新規書き込み状態で開き、passwordを追加する
-        f2 = open("file2.txt","w")
-        f2.write(password)
-        f2.write("\n")
-        f2.close
-    #file2.txtが存在する場合
+    #userIDfile.txtを追記状態で開き、userIDを追加する
+    with open("userIDfile.txt","a",encoding = "utf-8",errors="ignore") as f1:
+        f1.write(userID)
+        f1.write("\n")
+        f1.close
+    #passwordfile.txtが存在しない場合
+    if os.path.exists('passwordfile.txt') is False:
+        #passwordfile.txtを新規書き込み状態で開き、passwordを追加する
+        with open("passwordfile.txt","w",encoding = "utf-8",errors = "ignore") as f2:
+            f2.write(password)
+            f2.write("\n")
+            f2.close
+    #passwordfile.txtが存在する場合
     else:
-        #file2.txtを追記状態で開き、passwordを追加する
-        f2 = open("file2.txt","a")
-        f2.write(password)
-        f2.write("\n")
-        f2.close
+        #passwordfile.txtを追記状態で開き、passwordを追加する
+        with open("passwordfile.txt","a",encoding = "utf-8",errors = "ignore") as f2:
+            f2.write(password)
+            f2.write("\n")
+            f2.close
 
     #先ほど入れた配列の中身があるかどうか調べる
-    if userIDlist[0] is None:
+    if list1[0] is None:
         return 0
     else:
         return 1
@@ -75,23 +75,23 @@ def CISu():
     戻り値　:　userIDlist
     """
 
-    #list1 ---> userIDのlistを格納するためのlist
-    #file1.txtが存在しない場合
-    if os.path.exists('file1.txt') is False:
-        #file1.txtを作り、その後読み込み状態にする
-        f3 = open("file1.txt","w")
-        f3.close()
-        f4 = open("file1.txt","r")
-        list1 = f4.readlines()    #f4をlist型にして、list1に渡す
-        f4.close()
-        return list1      
-    #file1.txtが存在する場合
+    #userIDlist ---> userIDのlistを格納するためのlist
+    #userIDfile.txtが存在しない場合
+    if os.path.exists('userIDfile.txt') is False:
+        #userIDfile.txtを作り、その後読み込み状態にする
+        with open("userIDfile.txt","w",encoding = "utf-8",errors = "ignore") as f3:
+            f3.close()
+        with open("userIDfile.txt","r",encoding = "utf-8",errors = "ignore") as f4: 
+            userIDlist = f4.readlines()    #f4をlist型にして、userIDlistに渡す
+            f4.close()
+        return userIDlist      
+    #userIDfile.txtが存在する場合
     else:
-        #file1.txtを読み込み状態にする    
-        f3 = open("file1.txt","r")
-        list1 = f3.readlines()    #f3をlist型にして、list1に渡す
-        f3.close() 
-        return list1      #f3をlist型の状態で返す
+        #userIDfile.txtを読み込み状態にする    
+        with open("userIDfile.txt","r",encoding = "utf-8",errors = "ignore") as f3:
+            userIDlist = f3.readlines()    #f3をlist型にして、userIDlistに渡す
+            f3.close() 
+        return userIDlist      #f3をlist型の状態で返す
 
 #CustomerInformationSuvey(password) 顧客情報調査(password)
 def CISp():
@@ -99,11 +99,11 @@ def CISp():
     passwordの情報をC2 認証処理部にデータを送る
     戻り値: passwordlist
     """
-    #list2 ---> passwordのlistを格納するためのlist    
-    #最初からfile2を読み込み状態にする
-    f5 = open("file2.txt","r")
-    list2 = f5.readlines() #f5をlist型にして、list2に渡す
-    f5.close()
-    return list2          
-
+    #passwordlist ---> passwordのlistを格納するためのlist    
+    #最初からpasswordfileを読み込み状態にする
+    # coding: utf-8
+    with open("passwordfile.txt","r",encoding = "utf-8",errors = "ignore") as f5:
+        passwordlist = f5.readlines() #f5をlist型にして、passwordlistに渡す
+        f5.close()
+    return passwordlist          
 
