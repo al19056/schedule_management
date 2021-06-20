@@ -3,12 +3,13 @@
 ###***Date:2021.6.11
 ###***Purpose:C1コンポーネント(サーバサイドの関数のみ)
 #####################################################
-# import testC2 as C2
-# import testC3 as C3
-# import testC4 as C4
-import C2
-import C3
-import C4
+import testC2 as C2
+import testC3 as C3
+import testC4 as C4
+
+# import C2
+# import C3
+# import C4
 from flask import redirect, session, url_for
 import datetime
 import hashlib
@@ -16,19 +17,20 @@ import hashlib
 # M1-1 ログイン処理モジュール
 def requestLogin(userID, password):
     """
-    C2認証処理部にログインを要求をし、結果によって画面遷移やCookieへの値の追加を行う
+    機能概要:
+        C2認証処理部にログインを要求をし、結果によって画面遷移やCookieへの値の追加を行う
 
-      引数:
+    引数:
         userID   (str):W1ログイン画面からPOSTされたemailフィールド
         password (str):W1ログイン画面からPOSTされたpasswordフィールド
 
-      戻り値:
+    戻り値:
         失敗時:
-          'failed':W1ログイン画面で再入力要求アラートを表示
+            'failed':W1ログイン画面で再入力要求アラートを表示
 
         成功時:
-          Cookieへログイン情報を保存
-          homeへリダイレクトし、W2初期画面を表示する
+            Cookieへログイン情報を保存
+            homeへリダイレクトし、W2初期画面を表示する
     """
     hashPassword = hashlib.sha256(password.encode()).hexdigest()  # passwordのハッシュ化
     result = C2.authenticationProcessing(userID, hashPassword)
@@ -46,19 +48,20 @@ def requestLogin(userID, password):
 # M1-2 ユーザ登録処理モジュール
 def requestAddUser(userID, password):
     """
-    C2認証処理部にユーザ登録を要求をし、結果によって画面遷移やCookieへの値の追加を行う
+    機能概要:
+        C2認証処理部にユーザ登録を要求をし、結果によって画面遷移やCookieへの値の追加を行う
 
-      引数:
+    引数:
         userID   (str):W1ログイン画面からPOSTされたemailフィールド
         password (str):W1ログイン画面からPOSTされたpasswordフィールド
 
-      戻り値:
+    戻り値:
         失敗時:
-          'failed':W1ログイン画面で再入力要求アラートを表示
+            'failed':W1ログイン画面で再入力要求アラートを表示
 
         成功時:
-          Cookieへログイン情報を保存
-          homeへリダイレクトし、W2初期画面を表示する
+            Cookieへログイン情報を保存
+            homeへリダイレクトし、W2初期画面を表示する
     """
     hashPassword = hashlib.sha256(password.encode()).hexdigest()  # passwordのハッシュ化
     result = C2.addUser(userID, hashPassword)
@@ -78,16 +81,17 @@ def requestAddUser(userID, password):
 # M1-3 予定情報問い合わせ処理モジュール
 def planQuery(userID, orderDate, mode):
     """
-    C3予定処理部に予定情報の要求を行い、結果を返す
+    機能概要:
+        C3予定処理部に予定情報の要求を行い、結果を返す
 
-      引数:
+    引数:
         userID    (str)    :ユーザのID
         orderDate (str)    :要求年月日 YYYY-MM-DDの形式
         mode      (str)    :'day'  :指定日
                             'month':指定月
                             'over' :指定日以降すべて
                             'all'  :すべて
-      戻り値:
+    戻り値:
         dataList (list):予定情報の入ったリスト(予定情報は辞書形式)
         例:[{"start":"2021-06-10T12:00",　"end":"2021-06-10T15:00",　"title":"宿題",　"planID":"uqwpruedfqer"},{"start":"2021-...}]
     """
@@ -103,22 +107,23 @@ def planQuery(userID, orderDate, mode):
 # M1-4 予定情報編集処理モジュール
 def planEdit(userID, start, end, title, planID):
     """
-    C3予定処理部に予定情報の更新要求を行い、結果を返す
+    機能概要:
+        C3予定処理部に予定情報の更新要求を行い、結果を返す
 
-      引数:
+    引数:
         userID (str):ユーザのID
         start  (str):予定の開始時刻
         end    (str):予定の終了時刻
         title  (str):予定の名称
         planID (str):編集する予定のID 予定の追加時は''
 
-      戻り値:
+    戻り値:
         失敗時:
-          'failed'
+            'failed'
         成功時:
-          削除:'success del'
-          更新:'success update'
-          追加:newID C3から返された新たに作成された予定ID
+            削除:'success del'
+            更新:'success update'
+            追加:newID C3から返された新たに作成された予定ID
     """
     newID = C3.planEdit(userID, start, end, title, planID)
     # 失敗時
@@ -138,17 +143,18 @@ def planEdit(userID, start, end, title, planID):
 # M1-5 課題情報問い合わせ処理モジュール
 def taskQuery(userID, orderDate, mode):
     """
-    C4課題処理部に課題情報の要求を行い、結果を返す
+    機能概要:
+        C4課題処理部に課題情報の要求を行い、結果を返す
 
-      引数:
-      　userID    (str)    :ユーザのID
+    引数:
+        userID    (str)    :ユーザのID
         orderDate (str)    :要求年月日 YYYY-MM-DDの形式
         mode      (str)    :'day'  :指定日
                             'month':指定月
                             'over' :指定日以降すべて
                             'all'  :すべて
 
-      戻り値:
+    戻り値:
         dataList (list):課題情報の入ったリスト(課題情報は辞書形式)
         例:[{"due":"2021-06-10T12:00",　"need":"7",　"title":"宿題",　"taskID":"uqwpruedfqer"},{"due":"2021-...}]
     """
@@ -165,22 +171,23 @@ def taskQuery(userID, orderDate, mode):
 # M1-6 課題情報編集処理モジュール
 def taskEdit(userID, due, need, title, taskID):
     """
-    C4課題処理部に課題情報の更新要求を行い、結果を返す
+    機能概要:
+        C4課題処理部に課題情報の更新要求を行い、結果を返す
 
-      引数:
+    引数:
         userID (str):ユーザのID
         due    (str):課題の締切時刻
         need   (str):課題の必要時間
         title  (str):課題の名称
         taskID (str):編集する課題のID 課題の追加時は''
 
-      戻り値:
+    戻り値:
         失敗時:
-          'failed'
+            'failed'
         成功時:
-          削除:'success del'
-          更新:'success update'
-          追加:newID C4から返された新たに作成された予定ID
+            削除:'success del'
+            更新:'success update'
+            追加:newID C4から返された新たに作成された予定ID
     """
     newID = C4.taskEdit(userID, due, need, title, taskID)
     # 失敗時
@@ -203,13 +210,13 @@ def mustDo(userID, orderDate, restTime):
     機能概要:
         要求された日のMustDoデータを返す(MustDoは締切前日に終わるように計算)
 
-        引数:
-          userID    (str):ユーザのID
-          orderDate (str):mustDoリストを求める日付(YYYY-MM-DD)
-          restTime  (str):一日の休憩時間
+    引数:
+        userID    (str):ユーザのID
+        orderDate (str):mustDoリストを求める日付(YYYY-MM-DD)
+        restTime  (str):一日の休憩時間
 
-        戻り値:
-            要求された日付のmustDoデータ(titleのみ)をリストとして返す
+    戻り値:
+        要求された日付のmustDoデータ(titleのみ)をリストとして返す
     """
     # 要求する予定、課題は次の日以降のもの
     orderDateTomorrow = datetime.datetime.strptime(orderDate, "%Y-%m-%d")
