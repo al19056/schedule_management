@@ -22,7 +22,7 @@ def planSearch(userIDArg,orderDateArg):
     cur=planConn.Cursor() 
     
     #plan.dbテーブルから指定された予定の検索
-    cur.execute('SELECT * FROM plan.db WHERE useID='+str(userIDArg)+'AND orderDate='+str(orderDateArg))
+    cur.execute('SELECT * FROM test WHERE userID=? AND start=?',[userIDArg,orderDateArg])
     tempList=cur.fetchall()
     
     #戻り値のリストへ指定された順番に代入
@@ -58,10 +58,10 @@ def planInsert(userIDArg,startArg,endArg,titleArg):
     cur=planConn.Cursor() 
 
     #plan.dbテーブルへ指定された予定の追加
-    cur.execute('INSERT INTO plan.db values('+str(userIDArg)+','+str(startArg)+','+str(endArg)+','+str(titleArg)+','+str(planIDArg)+')')
+    cur.execute('INSERT INTO test values(?,?,?,?,?)',[userIDArg,startArg,endArg,titleArg,planIDArg])
     
     #エラー確認用にtempListへ代入
-    cur.execute('SELECT * FROM plan.db WHERE userID='+str(userIDArg)+' AND planID='+str(planIDArg))
+    cur.execute('SELECT * FROM test WHERE userID=? AND planID=?',[userIDArg,planIDArg])
     tempList=cur.fetchall()
 
     cur.close()
@@ -89,10 +89,10 @@ def planUpdate(userIDArg,startArg,endArg,titleArg,planIDArg):
     cur=planConn.Cursor() 
 
     #plan.dbテーブルへ指定された予定の更新
-    cur.execute('UPDATE plan.db SET start='+str(startArg)+',end='+str(endArg)+',title='+str(titleArg)+ 'WHERE planID='+str(planIDArg))    
+    cur.execute('UPDATE plan.db SET start=? ,end=? ,title=? WHERE planID=?',[startArg,endArg,titleArg,planIDArg])    
     
     #エラー確認用にtempListへ代入
-    cur.execute('SELECT * FROM plan.db WHERE planID='+str(planIDArg)+'AND userID='+str(userIDArg))
+    cur.execute('SELECT * FROM plan.db WHERE planID=? AND userID=?',[planIDArg,userIDArg])
     tempList=cur.fetchall()
 
     cur.close()
@@ -117,10 +117,10 @@ def planDelete(userIDArg,planIDArg):
     cur=planConn.Cursor() 
 
     #plan.dbテーブルの指定された予定の削除
-    cur.execute('DELETE FROM plan.db WHERE planID='+str(planIDArg)+'AND userID='+str(userIDArg))
+    cur.execute('DELETE FROM plan.db WHERE planID=? AND userID=?',[planIDArg,userIDArg])
     
     #エラー確認用にtempListへ代入
-    cur.execute('SELECT * FROM plan.db WHERE planID='+str(planIDArg)+'AND userID='+str(userIDArg))
+    cur.execute('SELECT * FROM plan.db WHERE planID=? AND userID=?',[planIDArg,userIDArg])
     tempList=cur.fetchall()
 
     cur.close()
@@ -145,7 +145,7 @@ def planSearchMany(userIDArg,orderDate):
     cur=planConn.Cursor() 
 
     #plan.dbテーブルの指定日以降の予定の検索
-    cur.executemany('SELECT * FROM plan.db WHERE start>='+str(orderDate)+'AND userID='+str(userIDArg))
+    cur.execute('SELECT * FROM plan.db WHERE start>=? AND userID=?',[orderDate,userIDArg])
     tempList=cur.fetchall()
 
     #戻り値のリストへ指定された順番に代入
@@ -175,7 +175,7 @@ def planSearchAll(userIDArg):
     cur=planConn.Cursor() 
 
     #plan.dbテーブルの指定されたユーザのすべての予定の検索
-    cur.executemany('SELECT * FROM plan.db WHERE userID='+str(userIDArg))
+    cur.execute('SELECT * FROM plan.db WHERE userID=?',[userIDArg])
     tempList=cur.fetchall()
     
     #戻り値のリストへ指定された順番に代入
