@@ -26,7 +26,7 @@ def taskQuerySub(userID,orderData):
     """
 
     #課題情報データーベースに登録された課題の検索
-    cur=taskConn.Cursor()
+    cur=taskConn.cursor()
     cur.execute('SELECT * FROM tasks WHERE userID=? AND due LIKE ?',[userID,orderDate+'T'+'%'])
     tempList=cur.fetchall()
     
@@ -67,7 +67,7 @@ def taskEditSub(userID,due,need,title,taskID):
     if taskID == None: 
         newTaskID=str(uuid.uuid4()) #taskIDを乱数を用いて定義
 
-        cur=taskConn.Cursor()
+        cur=taskConn.cursor()
         cur.execute('INSERT INTO tasks values(?,?,?,?,?)',[userID,due,need,title,newTaskID])
 
         cur.execute('SELECT * FROM tasks WHERE userID=? AND taskID=?',[userID,newTaskID])
@@ -84,7 +84,7 @@ def taskEditSub(userID,due,need,title,taskID):
     elif due == None: 
         newTaskID=taskID
 
-        cur=taskConn.Cursor()
+        cur=taskConn.cursor()
         cur.execute('DELETE FROM tasks WHERE userID=? AND taskID=?',[userID,newTaskID])
 
         cur.execute('SELECT * FROM tasks WHERE userID=? AND taskID=?',[userID,newTaskID])
@@ -102,7 +102,7 @@ def taskEditSub(userID,due,need,title,taskID):
     else: 
         newTaskID=taskID
 
-        cur=taskConn.Cursor()
+        cur=taskConn.cursor()
         cur.execute('UPDATE tasks SET due=?,need=?,title=? WHERE taskID=?',[due,need,title,newTaskID])
 
         cur.execute('SELECT * FROM tasks WHERE userID=? AND taskID=?',[userID,newTaskID])
@@ -132,7 +132,7 @@ def taskQueryManySub(userID,orderData):
     """
 
     #課題情報データーベースに登録された課題の検索
-    cur=taskConn.Cursor()
+    cur=taskConn.cursor()
     cur.execute('SELECT * FROM tasks WHERE userID=? AND due >= ?',[userID,orderDate+'T'+'%'])
     tempList=cur.fetchall()
     
@@ -167,7 +167,7 @@ def taskQueryAllSub(userID):
     """
 
     #課題情報データーベースに登録された課題の検索
-    cur=taskConn.Cursor()
+    cur=taskConn.cursor()
     cur.execute('SELECT * FROM tasks WHERE userID=?',[userID])
     tempList=cur.fetchall()
     
