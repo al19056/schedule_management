@@ -9,7 +9,6 @@ from app import taskConn
 import sqlite3
 import uuid
 
-
 def taskQuerySub(userID,orderData):
     """
     機能概要    :指定日の課題の情報を検索する.
@@ -28,7 +27,7 @@ def taskQuerySub(userID,orderData):
 
     #課題情報データーベースに登録された課題の検索
     cur=taskConn.Cursor()
-    cur.execute('SELECT * FROM tasks.db WHERE orderDate='+str(due[0:10])+'AND userID='+str(userID))
+    cur.execute('SELECT * FROM tasks WHERE userID=? AND due[0:10]=? ',[userID,orderData])
     tempList=cur.fetchall()
     
     #戻り値のリストに代入
@@ -60,10 +59,10 @@ def taskEditSub(userID,due,need,title,taskID):
 
     #課題の情報を追加
     if taskID == None: 
-        newTaskID=str(uuid.uuid4())　#taskIDを乱数を用いて定義
+        newTaskID=str(uuid.uuid4()) #taskIDを乱数を用いて定義
 
         cur=taskConn.Cursor()
-        cur.execute('INSERT INTO tasks.db values('+str(userID)+','+str(due)+','+str(need)+','+str(title)+','+str(newTaskID)+')')
+        cur.execute('INSERT INTO tasks values(?,?,?,?,?)'[userID,due,need,title,newTaskID])
         cur.close()
 
         return newTaskID
@@ -73,7 +72,7 @@ def taskEditSub(userID,due,need,title,taskID):
         newTaskID=taskID
 
         cur=taskConn.Cursor()
-        cur.execute('DELETE FROM tasks.db WHERE taskID='+str(newTaskID)+'AND userID='+str(userID))
+        cur.execute('DELETE FROM tasks WHERE userID=? AND taskID=?',[userID,newTaskID])
         cur.close()
 
         return newTaskID
@@ -83,7 +82,7 @@ def taskEditSub(userID,due,need,title,taskID):
         newTaskID=taskID
 
         cur=taskConn.Cursor()
-        cur.execute('UPDATE task.db SET due='+str(due)+',need='+str(need)+',title='+str(title)+ 'WHERE taskID='+str(newTaskID))
+        cur.execute('UPDATE tasks SET due=?,need=?,title=? WHERE taskID=?',[due,need,title,newTaskID])
         cur.close()
 
         return newTaskID
@@ -106,7 +105,7 @@ def taskQueryManySub(userID,orderData):
 
     #課題情報データーベースに登録された課題の検索
     cur=taskConn.Cursor()
-    cur.execute('SELECT * FROM tasks.db WHERE orderDate>='+str(due[0:10])+'AND userID='+str(userID))
+    cur.execute('SELECT * FROM tasks WHERE userID=? AND due[0:10]>=? ',[userID,orderData])
     tempList=cur.fetchall()
     
     #戻り値のリストに代入
@@ -135,7 +134,7 @@ def taskQueryAllSub(userID):
 
     #課題情報データーベースに登録された課題の検索
     cur=taskConn.Cursor()
-    cur.execute('SELECT * FROM tasks.db WHERE userID='+str(userID))
+    cur.execute('SELECT * FROM tasks WHERE userID=?',[userID])
     tempList=cur.fetchall()
     
     #戻り値のリストに代入
@@ -143,5 +142,5 @@ def taskQueryAllSub(userID):
     for x in range(len(tempList)):
         newList.append=[{"due":tempList[x][1], "need":tempList[x][2], "title":tempList[x][3], "taskID":tempList[x][4]}]
     cur.close()
-    
+
     return newList
