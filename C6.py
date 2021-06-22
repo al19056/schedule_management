@@ -143,5 +143,5 @@ def taskQueryAllSub(userID):
     for x in range(len(tempList)):
         newList.append=[{"due":tempList[x][1], "need":tempList[x][2], "title":tempList[x][3], "taskID":tempList[x][4]}]
     cur.close()
-    
+
     return newList
