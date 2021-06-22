@@ -21,8 +21,8 @@ def planSearch(userIDArg,orderDateArg):
     '''
     cur=planConn.Cursor() 
     
-    #plan.dbテーブルから指定された予定の検索
-    cur.execute('SELECT * FROM plans WHERE userID=? AND start=?',[userIDArg,orderDateArg])
+    #plansテーブルから指定された日付の予定の検索
+    cur.execute('SELECT * FROM plans WHERE userID=? AND start like ?',[userIDArg,orderDateArg+'T'+'%'])
     tempList=cur.fetchall()
     
     #戻り値のリストへ指定された順番に代入
@@ -57,7 +57,7 @@ def planInsert(userIDArg,startArg,endArg,titleArg):
 
     cur=planConn.Cursor() 
 
-    #plan.dbテーブルへ指定された予定の追加
+    #plansテーブルへ指定された予定の追加
     cur.execute('INSERT INTO plans values(?,?,?,?,?)',[userIDArg,startArg,endArg,titleArg,planIDArg])
     
     #エラー確認用にtempListへ代入
@@ -88,7 +88,7 @@ def planUpdate(userIDArg,startArg,endArg,titleArg,planIDArg):
     ''' 
     cur=planConn.Cursor() 
 
-    #plan.dbテーブルへ指定された予定の更新
+    #plansテーブルへ指定された予定の更新
     cur.execute('UPDATE plans SET start=? ,end=? ,title=? WHERE planID=?',[startArg,endArg,titleArg,planIDArg])    
     
     #エラー確認用にtempListへ代入
@@ -116,7 +116,7 @@ def planDelete(userIDArg,planIDArg):
     ''' 
     cur=planConn.Cursor() 
 
-    #plan.dbテーブルの指定された予定の削除
+    #plansテーブルの指定された予定の削除
     cur.execute('DELETE FROM plans WHERE planID=? AND userID=?',[planIDArg,userIDArg])
     
     #エラー確認用にtempListへ代入
@@ -144,7 +144,7 @@ def planSearchMany(userIDArg,orderDate):
     ''' 
     cur=planConn.Cursor() 
 
-    #plan.dbテーブルの指定日以降の予定の検索
+    #plansテーブルの指定日以降の予定の検索
     cur.execute('SELECT * FROM plans WHERE start>=? AND userID=?',[orderDate,userIDArg])
     tempList=cur.fetchall()
 
@@ -174,7 +174,7 @@ def planSearchAll(userIDArg):
     ''' 
     cur=planConn.Cursor() 
 
-    #plan.dbテーブルの指定されたユーザのすべての予定の検索
+    #plansテーブルの指定されたユーザのすべての予定の検索
     cur.execute('SELECT * FROM plans WHERE userID=?',[userIDArg])
     tempList=cur.fetchall()
     
