@@ -1,6 +1,6 @@
 #####################################################
 ###***Designer:荒井
-###***Date:2021.6.18
+###***Date:2021.6.22
 ###***Purpose:C6コンポーネント
 #####################################################
 
@@ -27,16 +27,22 @@ def taskQuerySub(userID,orderData):
 
     #課題情報データーベースに登録された課題の検索
     cur=taskConn.Cursor()
-    cur.execute('SELECT * FROM tasks WHERE userID=? AND due[0:10]=? ',[userID,orderData])
+    cur.execute('SELECT * FROM tasks WHERE userID=? AND due LIKE ?',[userID,orderDate+'T'+'%'])
     tempList=cur.fetchall()
     
     #戻り値のリストに代入
-    newList=[[]]
+    newList=[]
+    keys=['due','need','title','taskID']
     for x in range(len(tempList)):
-        newList.append=[{"due":tempList[x][1], "need":tempList[x][2], "title":tempList[x][3], "taskID":tempList[x][4]}]
-    cur.close()
+        values=[tempList[x][1],tempList[x][2],tempList[x][3],tempList[x][4]]
+        newList.append(dict(zip(keys,values)))
     
-    return newList
+    cur.close()
+
+    if(len(newList)==0): #リストが存在していなければエラー
+        return "failed"
+    else:
+        return newList
 
 def taskEditSub(userID,due,need,title,taskID):
     """
@@ -62,10 +68,17 @@ def taskEditSub(userID,due,need,title,taskID):
         newTaskID=str(uuid.uuid4()) #taskIDを乱数を用いて定義
 
         cur=taskConn.Cursor()
-        cur.execute('INSERT INTO tasks values(?,?,?,?,?)'[userID,due,need,title,newTaskID])
+        cur.execute('INSERT INTO tasks values(?,?,?,?,?)',[userID,due,need,title,newTaskID])
+
+        cur.execute('SELECT * FROM tasks WHERE userID=? AND taskID=?',[userID,newTaskID])
+        tempList=cur.fetchall()
+        
         cur.close()
 
-        return newTaskID
+        if(len(tempList)==0): #追加したリストが存在していなければエラー
+            return "failed"
+        else:
+            return newTaskID
 
     #課題の情報を削除
     elif due == None: 
@@ -73,9 +86,17 @@ def taskEditSub(userID,due,need,title,taskID):
 
         cur=taskConn.Cursor()
         cur.execute('DELETE FROM tasks WHERE userID=? AND taskID=?',[userID,newTaskID])
+
+        cur.execute('SELECT * FROM tasks WHERE userID=? AND taskID=?',[userID,newTaskID])
+        tempList=cur.fetchall()
+        
         cur.close()
 
-        return newTaskID
+        if(len(tempList)==0): #削除したリストが存在していればエラー
+            return newTaskID
+        else:
+            return "failed"
+
 
     #課題の情報を変更
     else: 
@@ -83,9 +104,16 @@ def taskEditSub(userID,due,need,title,taskID):
 
         cur=taskConn.Cursor()
         cur.execute('UPDATE tasks SET due=?,need=?,title=? WHERE taskID=?',[due,need,title,newTaskID])
+
+        cur.execute('SELECT * FROM tasks WHERE userID=? AND taskID=?',[userID,newTaskID])
+        tempList=cur.fetchall()
+        
         cur.close()
 
-        return newTaskID
+        if(len(tempList)==0): #変更したリストが存在していなければエラー
+            return "failed"
+        else:
+            return newTaskID
 
 def taskQueryManySub(userID,orderData):
     """
@@ -105,16 +133,22 @@ def taskQueryManySub(userID,orderData):
 
     #課題情報データーベースに登録された課題の検索
     cur=taskConn.Cursor()
-    cur.execute('SELECT * FROM tasks WHERE userID=? AND due[0:10]>=? ',[userID,orderData])
+    cur.execute('SELECT * FROM tasks WHERE userID=? AND due >= ?',[userID,orderDate+'T'+'%'])
     tempList=cur.fetchall()
     
     #戻り値のリストに代入
-    newList=[[]]
+    newList=[]
+    keys=['due','need','title','taskID']
     for x in range(len(tempList)):
-        newList.append=[{"due":tempList[x][1], "need":tempList[x][2], "title":tempList[x][3], "taskID":tempList[x][4]}]
-    cur.close()
+        values=[tempList[x][1],tempList[x][2],tempList[x][3],tempList[x][4]]
+        newList.append(dict(zip(keys,values)))
     
-    return newList
+    cur.close()
+
+    if(len(newList)==0): #リストが存在していなければエラー
+        return "failed"
+    else:
+        return newList
 
 
 def taskQueryAllSub(userID):
@@ -138,9 +172,15 @@ def taskQueryAllSub(userID):
     tempList=cur.fetchall()
     
     #戻り値のリストに代入
-    newList=[[]]
+    newList=[]
+    keys=['due','need','title','taskID']
     for x in range(len(tempList)):
-        newList.append=[{"due":tempList[x][1], "need":tempList[x][2], "title":tempList[x][3], "taskID":tempList[x][4]}]
+        values=[tempList[x][1],tempList[x][2],tempList[x][3],tempList[x][4]]
+        newList.append(dict(zip(keys,values)))
+    
     cur.close()
 
-    return newList
+    if(len(newList)==0): #リストが存在していなければエラー
+        return "failed"
+    else:
+        return newList
