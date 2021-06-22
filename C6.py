@@ -9,7 +9,6 @@ from app import taskConn
 import sqlite3
 import uuid
 
-
 def taskQuerySub(userID,orderData):
     """
     機能概要    :指定日の課題の情報を検索する.
@@ -60,7 +59,7 @@ def taskEditSub(userID,due,need,title,taskID):
 
     #課題の情報を追加
     if taskID == None: 
-        newTaskID=str(uuid.uuid4())　#taskIDを乱数を用いて定義
+        newTaskID=str(uuid.uuid4()) #taskIDを乱数を用いて定義
 
         cur=taskConn.Cursor()
         cur.execute('INSERT INTO tasks values(?,?,?,?,?)'[userID,due,need,title,newTaskID])
