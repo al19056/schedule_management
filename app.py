@@ -15,7 +15,6 @@ import json
 import os
 import sqlite3
 import datetime
-import C1
 
 try:
     planConn = sqlite3.connect("db/plans.db")
@@ -25,6 +24,7 @@ except sqlite3.Error as err:
     print("catch error:", err)
     exit()
 
+import C1
 
 app = Flask(__name__)
 app.secret_key = os.urandom(16)  # Cookie暗号化に使用
