@@ -17,12 +17,12 @@ def planSearch(userIDArg,orderDateArg):
                 :orderDateArg(str)  :指定された日付
 
     戻り値      :planList(List) :指定日の予定のリスト(成功時)
-                :"Failed"       :文字列"Failed"(失敗時)
+                :"failed"       :文字列"failed"(失敗時)
     '''
     cur=planConn.Cursor() 
     
     #plan.dbテーブルから指定された予定の検索
-    cur.execute('SELECT * FROM plan.db WHERE useID='+str(userIDArg)+'AND orderDate='+str(orderDateArg))
+    cur.execute('SELECT * FROM plans WHERE userID=? AND start=?',[userIDArg,orderDateArg])
     tempList=cur.fetchall()
     
     #戻り値のリストへ指定された順番に代入
@@ -34,8 +34,8 @@ def planSearch(userIDArg,orderDateArg):
     
     cur.close()
 
-    if(planList is None): #エラーの場合
-        return "Failed"
+    if(len(planList)==0): #エラーの場合
+        return "failed"
     else:
         return planList
 
@@ -51,23 +51,23 @@ def planInsert(userIDArg,startArg,endArg,titleArg):
                 :titleArg(str)      :予定の名称
 
     戻り値      :planIDArg(str)    :予定ID(成功時)
-                :"Failed"       :文字列"Failed"(失敗時)
+                :"failed"          :文字列"failed"(失敗時)
     '''
     planIDArg=str(uuid.uuid4()) #planIDを新たに作成
 
     cur=planConn.Cursor() 
 
     #plan.dbテーブルへ指定された予定の追加
-    cur.execute('INSERT INTO plan.db values('+str(userIDArg)+','+str(startArg)+','+str(endArg)+','+str(titleArg)+','+str(planIDArg)+')')
+    cur.execute('INSERT INTO plans values(?,?,?,?,?)',[userIDArg,startArg,endArg,titleArg,planIDArg])
     
     #エラー確認用にtempListへ代入
-    cur.execute('SELECT * FROM plan.db WHERE userID='+str(userIDArg)+' AND planID='+str(planIDArg))
+    cur.execute('SELECT * FROM plans WHERE userID=? AND planID=?',[userIDArg,planIDArg])
     tempList=cur.fetchall()
 
     cur.close()
 
-    if(tempList is None): #エラーの場合
-        return "Failed"
+    if(len(tempList)==0): #エラーの場合
+        return "failed"
     else:
         return planIDArg
     
@@ -84,21 +84,21 @@ def planUpdate(userIDArg,startArg,endArg,titleArg,planIDArg):
                 :planIDArg(str)        :予定ID
 
     戻り値      :planIDArg(str)    :予定ID(成功時)
-                :"Failed"       :文字列"Failed"(失敗時)
+                :"failed"          :文字列"failed"(失敗時)
     ''' 
     cur=planConn.Cursor() 
 
     #plan.dbテーブルへ指定された予定の更新
-    cur.execute('UPDATE plan.db SET start='+str(startArg)+',end='+str(endArg)+',title='+str(titleArg)+ 'WHERE planID='+str(planIDArg))    
+    cur.execute('UPDATE plans SET start=? ,end=? ,title=? WHERE planID=?',[startArg,endArg,titleArg,planIDArg])    
     
     #エラー確認用にtempListへ代入
-    cur.execute('SELECT * FROM plan.db WHERE planID='+str(planIDArg)+'AND userID='+str(userIDArg))
+    cur.execute('SELECT * FROM plans WHERE planID=? AND userID=?',[planIDArg,userIDArg])
     tempList=cur.fetchall()
 
     cur.close()
 
-    if(tempList is None): #エラーの場合
-        return "Failed"
+    if(len(tempList)==0): #エラーの場合
+        return "failed"
     else:
         return planIDArg
 
@@ -112,23 +112,23 @@ def planDelete(userIDArg,planIDArg):
                 :planIDArg(str)    :予定ID
 
     戻り値      :planIDArg(str)    :予定ID(成功時)
-                :"Failed"       :文字列"Failed"(失敗時)
+                :"failed"          :文字列"failed"(失敗時)
     ''' 
     cur=planConn.Cursor() 
 
     #plan.dbテーブルの指定された予定の削除
-    cur.execute('DELETE FROM plan.db WHERE planID='+str(planIDArg)+'AND userID='+str(userIDArg))
+    cur.execute('DELETE FROM plans WHERE planID=? AND userID=?',[planIDArg,userIDArg])
     
     #エラー確認用にtempListへ代入
-    cur.execute('SELECT * FROM plan.db WHERE planID='+str(planIDArg)+'AND userID='+str(userIDArg))
+    cur.execute('SELECT * FROM plans WHERE planID=? AND userID=?',[planIDArg,userIDArg])
     tempList=cur.fetchall()
 
     cur.close()
 
-    if(tempList is None):
+    if(len(tempList)==0):
         return planIDArg
     else:
-        return "Failed" #エラーの場合
+        return "failed" #エラーの場合
 
 
 
@@ -140,12 +140,12 @@ def planSearchMany(userIDArg,orderDate):
                 :orderDate(str) :指定された日付
 
     戻り値      :planListMany(List) :指定日以降の予定データのリスト(成功時)
-                :"Failed"           :文字列"Failed"(失敗時)
+                :"failed"           :文字列"failed"(失敗時)
     ''' 
     cur=planConn.Cursor() 
 
     #plan.dbテーブルの指定日以降の予定の検索
-    cur.executemany('SELECT * FROM plan.db WHERE start>='+str(orderDate)+'AND userID='+str(userIDArg))
+    cur.execute('SELECT * FROM plans WHERE start>=? AND userID=?',[orderDate,userIDArg])
     tempList=cur.fetchall()
 
     #戻り値のリストへ指定された順番に代入
@@ -156,8 +156,8 @@ def planSearchMany(userIDArg,orderDate):
         planListMany.append(dict(zip(keys,values)))
     cur.close()
 
-    if(planListMany is None): #エラーの場合
-        return "Failed"
+    if(len(planListMany)==0): #エラーの場合
+        return "failed"
     else:
         return planListMany
 
@@ -170,12 +170,12 @@ def planSearchAll(userIDArg):
     引数        :userIDArg(str)    :ユーザID
 
     戻り値      :planListAll(List) :ユーザのすべての予定データのリスト(成功時)
-                :"Failed"           :文字列"Failed"(失敗時)
+                :"failed"          :文字列"failed"(失敗時)
     ''' 
     cur=planConn.Cursor() 
 
     #plan.dbテーブルの指定されたユーザのすべての予定の検索
-    cur.executemany('SELECT * FROM plan.db WHERE userID='+str(userIDArg))
+    cur.execute('SELECT * FROM plans WHERE userID=?',[userIDArg])
     tempList=cur.fetchall()
     
     #戻り値のリストへ指定された順番に代入
@@ -187,7 +187,7 @@ def planSearchAll(userIDArg):
 
     cur.close()
 
-    if(planListAll is None): #エラーの場合
-        return "Failed"
+    if(len(planListAll)==0): #エラーの場合
+        return "failed"
     else:
         return planListAll

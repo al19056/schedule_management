@@ -11,9 +11,7 @@ import os
 
 
 list1 = []
-list2 = []
-#list1 : 引数のuserIDを一時保存する
-#list2 : 引数のpasswordを一時保存する 
+#list1 : 引数のuserIDを一時保存する 
 # ここに各々のデータを格納する
 
 
@@ -32,9 +30,6 @@ def CIR(userID,password):
 
 
     """
-    #userIDとpasswordを各々のlistに追加する
-    list1.append(userID)
-    list2.append(password)
 
     """
     userIDfile.txt ----> userIDのデータを保存する
@@ -61,8 +56,11 @@ def CIR(userID,password):
             f2.write("\n")
             f2.close
 
-    #先ほど入れた配列の中身があるかどうか調べる
-    if list1[0] is None:
+    #先ほど用意した配列に中身をいれて、実在するかどうか調べる
+    with open("userIDfile.txt","r",encoding = "utf-8",errors = "igonore") as f3:
+        list1 = f3.readlines()
+        f3.close()
+    if list1[-1] is None:
         return 0
     else:
         return 1
@@ -105,5 +103,4 @@ def CISp():
     with open("passwordfile.txt","r",encoding = "utf-8",errors = "ignore") as f5:
         passwordlist = f5.readlines() #f5をlist型にして、passwordlistに渡す
         f5.close()
-    return passwordlist          
-
+    return passwordlist         
