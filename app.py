@@ -386,5 +386,5 @@ def errorPage(error):
 if __name__ == "__main__":
     print("test用モード・debug=True")
     app.run(
-        debug=True
+        debug=False, port=80, host="0.0.0.0", threaded=True
     )  ###############host='0.0.0.0'とport=とthreaded=True,debug=Falseを指定する
