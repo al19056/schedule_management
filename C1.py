@@ -32,7 +32,7 @@ def requestLogin(userID, password):
     result = C2.authenticationProcessing(userID, hashPassword)
     # ログイン失敗
     if result == "failed":
-        return "failed"
+        return "ログインに失敗しました。正しいメールアドレスとパスワードを入力してください"
     # ログイン成功
     else:
         session["userID"] = userID
