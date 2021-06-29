@@ -15,12 +15,8 @@ def taskQuerySub(userID,orderDate):
         userID(str)     :ユーザID
         orderDate(str)  :指定された日付
 
-    戻り値      
-        失敗:
-            文字列"failed"
-
-        成功:
-            newList(list):指定日の課題リスト
+    戻り値      :
+        newList(list):指定日の課題リスト
     """
 
     #課題情報データーベースに登録された課題の検索
@@ -132,12 +128,8 @@ def taskQueryManySub(userID,orderDate):
         userID(str)     :ユーザID
         orderDate(str)  :指定された日付
 
-    戻り値      
-        失敗:
-            文字列"failed"
-
-        成功:
-            newList(list):指定日の課題リスト
+    戻り値      :    
+        newList(list):指定日の課題リスト
     """
 
     #課題情報データーベースに登録された課題の検索
@@ -167,12 +159,8 @@ def taskQueryAllSub(userID):
     引数        :
         userID(str)     :ユーザID
 
-    戻り値      
-        失敗:
-            文字列"failed"
-
-        成功:
-            newList(list):指定日の課題リスト
+    戻り値      :
+        newList(list):指定日の課題リスト
     """
 
     #課題情報データーベースに登録された課題の検索

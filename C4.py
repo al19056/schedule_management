@@ -12,11 +12,8 @@ def taskQuery(userID,orderDate):
     引数        :
         userID(str)     :ユーザID
         orderDate(str)  :指定された日付
-    戻り値      
-        失敗:
-            文字列"failed"
-        成功:
-            newList(list):指定日の課題リスト
+    戻り値      :   
+        newList(list):指定日の課題リスト
     """
 
     newList=C6.taskQuerySub(userID,orderDate)
@@ -66,11 +63,8 @@ def taskQueryMany(userID,orderDate):
     引数        :
         userID(str)     :ユーザID
         orderDate(str)  :指定された日付
-    戻り値      
-        失敗:
-            文字列"failed"
-        成功:
-            newList(list):指定日以降の課題リスト
+    戻り値      :
+        newList(list):指定日以降の課題リスト
     """
 
     newList=C6.taskQueryManySub(userID,orderDate)
@@ -83,10 +77,7 @@ def taskQueryAll(userID):
     引数        :
         userID(str)     :ユーザID
     戻り値      
-        失敗:
-            文字列"failed"
-        成功:
-            newList(list):ユーザの全ての課題リスト
+        newList(list):ユーザの全ての課題リスト
     """
     
     newList=C6.taskQueryAllSub(userID)
