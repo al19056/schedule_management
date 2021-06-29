@@ -52,7 +52,7 @@ def addUser(userID,password):
     password (str):W1ログイン画面からPOSTされたpasswordフィールド
 
     戻り値:
-    exited : 既に存在していた場合にC1に返す
+    existed : 既に存在していた場合にC1に返す
     failed : エラーが起こった場合にC1に返す
     success : 登録に成功した場合にC1に返す
     """
@@ -61,7 +61,7 @@ def addUser(userID,password):
     #lumとuserIDが一致した場合、exitedを返す。
     for lum in C7.CISu():
         if lum == userID + "\n":
-            return "exited"
+            return "existed"
     
      #lumとuserIDが一致しなかった場合、C7のCIR関数を呼び出す。
     else:
