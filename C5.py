@@ -19,7 +19,7 @@ def planSearch(userIDArg,orderDateArg):
     戻り値      :planList(List) :指定日の予定のリスト(成功時)
                 :"failed"       :文字列"failed"(失敗時)
     '''
-    cur=planConn.Cursor() 
+    cur=planConn.cursor() 
     
     #plansテーブルから指定された日付の予定の検索
     cur.execute('SELECT * FROM plans WHERE userID=? AND start like ?',[userIDArg,orderDateArg+'T'+'%'])
@@ -55,7 +55,7 @@ def planInsert(userIDArg,startArg,endArg,titleArg):
     '''
     planIDArg=str(uuid.uuid4()) #planIDを新たに作成
 
-    cur=planConn.Cursor() 
+    cur=planConn.cursor() 
 
     #plansテーブルへ指定された予定の追加
     cur.execute('INSERT INTO plans values(?,?,?,?,?)',[userIDArg,startArg,endArg,titleArg,planIDArg])
@@ -86,7 +86,7 @@ def planUpdate(userIDArg,startArg,endArg,titleArg,planIDArg):
     戻り値      :planIDArg(str)    :予定ID(成功時)
                 :"failed"          :文字列"failed"(失敗時)
     ''' 
-    cur=planConn.Cursor() 
+    cur=planConn.cursor() 
 
     #plansテーブルへ指定された予定の更新
     cur.execute('UPDATE plans SET start=? ,end=? ,title=? WHERE planID=?',[startArg,endArg,titleArg,planIDArg])    
@@ -114,7 +114,7 @@ def planDelete(userIDArg,planIDArg):
     戻り値      :planIDArg(str)    :予定ID(成功時)
                 :"failed"          :文字列"failed"(失敗時)
     ''' 
-    cur=planConn.Cursor() 
+    cur=planConn.cursor() 
 
     #plansテーブルの指定された予定の削除
     cur.execute('DELETE FROM plans WHERE planID=? AND userID=?',[planIDArg,userIDArg])
@@ -142,7 +142,7 @@ def planSearchMany(userIDArg,orderDate):
     戻り値      :planListMany(List) :指定日以降の予定データのリスト(成功時)
                 :"failed"           :文字列"failed"(失敗時)
     ''' 
-    cur=planConn.Cursor() 
+    cur=planConn.cursor() 
 
     #plansテーブルの指定日以降の予定の検索
     cur.execute('SELECT * FROM plans WHERE start>=? AND userID=?',[orderDate,userIDArg])
@@ -172,7 +172,7 @@ def planSearchAll(userIDArg):
     戻り値      :planListAll(List) :ユーザのすべての予定データのリスト(成功時)
                 :"failed"          :文字列"failed"(失敗時)
     ''' 
-    cur=planConn.Cursor() 
+    cur=planConn.cursor() 
 
     #plansテーブルの指定されたユーザのすべての予定の検索
     cur.execute('SELECT * FROM plans WHERE userID=?',[userIDArg])
