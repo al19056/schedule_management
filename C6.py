@@ -35,9 +35,10 @@ def taskQuerySub(userID,orderData):
     for x in range(len(tempList)):
         values=[tempList[x][1],tempList[x][2],tempList[x][3],tempList[x][4]]
         newList.append(dict(zip(keys,values)))
-    
-    cur.close()
+
+    conn.commit()
     taskConn.close()
+    cur.close()
 
     if(len(newList)==0): #リストが存在していなければエラー
         return "failed"
@@ -74,8 +75,9 @@ def taskEditSub(userID,due,need,title,taskID):
         cur.execute('SELECT * FROM tasks WHERE userID=? AND taskID=?',[userID,newTaskID])
         tempList=cur.fetchall()
         
-        cur.close()
+        conn.commit()
         taskConn.close()
+        cur.close()
 
         if(len(tempList)==0): #追加したリストが存在していなければエラー
             return "failed"
@@ -93,8 +95,9 @@ def taskEditSub(userID,due,need,title,taskID):
         cur.execute('SELECT * FROM tasks WHERE userID=? AND taskID=?',[userID,newTaskID])
         tempList=cur.fetchall()
         
-        cur.close()
+        conn.commit()
         taskConn.close()
+        cur.close()
 
         if(len(tempList)==0): #削除したリストが存在していればエラー
             return newTaskID
@@ -113,8 +116,9 @@ def taskEditSub(userID,due,need,title,taskID):
         cur.execute('SELECT * FROM tasks WHERE userID=? AND taskID=?',[userID,newTaskID])
         tempList=cur.fetchall()
         
-        cur.close()
+        conn.commit()
         taskConn.close()
+        cur.close()
 
         if(len(tempList)==0): #変更したリストが存在していなければエラー
             return "failed"
@@ -150,8 +154,9 @@ def taskQueryManySub(userID,orderData):
         values=[tempList[x][1],tempList[x][2],tempList[x][3],tempList[x][4]]
         newList.append(dict(zip(keys,values)))
     
-    cur.close()
+    conn.commit()
     taskConn.close()
+    cur.close()
 
     if(len(newList)==0): #リストが存在していなければエラー
         return "failed"
@@ -187,8 +192,9 @@ def taskQueryAllSub(userID):
         values=[tempList[x][1],tempList[x][2],tempList[x][3],tempList[x][4]]
         newList.append(dict(zip(keys,values)))
     
-    cur.close()
+    conn.commit()
     taskConn.close()
+    cur.close()
 
     if(len(newList)==0): #リストが存在していなければエラー
         return "failed"
