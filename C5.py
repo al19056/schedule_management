@@ -139,7 +139,7 @@ def planDelete(userIDArg,planIDArg):
 
     
     
-    return "failed" #エラーの場合
+    return  planIDArg
 
 
 

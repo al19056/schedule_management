@@ -33,10 +33,10 @@ def planEdit(userID,start,end,title,planID):
     戻り値      :planInsert or planDelete or planUpdateの戻り値(planID) :予定ID (成功時)
                 :"Failed"                                               :文字列"Failed"(失敗時)
     '''
-    if(planID is None):
+    if(planID==""):
         return C5.planInsert(userID,start,end,title) #追加
     
-    elif(title is None):
+    elif(title==""):
         return C5.planDelete(userID,planID) #削除
     else:
         return C5.planUpdate(userID,start,end,title,planID) #更新
