@@ -37,8 +37,8 @@ def taskQuerySub(userID,orderDate):
         newList.append(dict(zip(keys,values)))
 
     taskConn.commit()
-    taskConn.close()
     cur.close()
+    taskConn.close()
 
     if(len(newList)==0): #リストが存在していなければエラー
         return "failed"
@@ -76,8 +76,9 @@ def taskEditSub(userID,due,need,title,taskID):
         tempList=cur.fetchall()
         
         taskConn.commit()
-        taskConn.close()
         cur.close()
+        taskConn.close()
+
 
         if(len(tempList)==0): #追加したリストが存在していなければエラー
             return "failed"
@@ -96,8 +97,8 @@ def taskEditSub(userID,due,need,title,taskID):
         tempList=cur.fetchall()
         
         taskConn.commit()
-        taskConn.close()
         cur.close()
+        taskConn.close()
 
         if(len(tempList)==0): #削除したリストが存在していればエラー
             return newTaskID
@@ -117,8 +118,9 @@ def taskEditSub(userID,due,need,title,taskID):
         tempList=cur.fetchall()
         
         taskConn.commit()
+        cur.close()    
         taskConn.close()
-        cur.close()
+    
 
         if(len(tempList)==0): #変更したリストが存在していなければエラー
             return "failed"
@@ -155,8 +157,8 @@ def taskQueryManySub(userID,orderDate):
         newList.append(dict(zip(keys,values)))
     
     taskConn.commit()
-    taskConn.close()
     cur.close()
+    taskConn.close()
 
     if(len(newList)==0): #リストが存在していなければエラー
         return "failed"
@@ -193,8 +195,8 @@ def taskQueryAllSub(userID):
         newList.append(dict(zip(keys,values)))
     
     taskConn.commit()
-    taskConn.close()
     cur.close()
+    taskConn.close()
 
     if(len(newList)==0): #リストが存在していなければエラー
         return "failed"
