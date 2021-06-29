@@ -6,12 +6,12 @@
 
 import C6
 
-def taskQuery(userID,orderData):
+def taskQuery(userID,orderDate):
     """
     機能概要    :日付の指定を受け取ったときに,その日付の課題の情報を要求し,リスト形式で返す.
     引数        :
         userID(str)     :ユーザID
-        orderData(str)  :指定された日付
+        orderDate(str)  :指定された日付
     戻り値      
         失敗:
             文字列"failed"
@@ -19,7 +19,7 @@ def taskQuery(userID,orderData):
             newList(list):指定日の課題リスト
     """
 
-    newList=C6.taskQuerySub(userID,orderData)
+    newList=C6.taskQuerySub(userID,orderDate)
     if newList==[[]]:
         return "failed"
     else:
@@ -62,12 +62,12 @@ def taskEdit(userID,due,need,title,taskID):
         else: 
             return newTaskID
 
-def taskQueryMany(userID,orderData):
+def taskQueryMany(userID,orderDate):
     """
     機能概要    :日付の指定を受け取ったときに,その日付以降の課題の情報を要求し,リスト形式で返す.
     引数        :
         userID(str)     :ユーザID
-        orderData(str)  :指定された日付
+        orderDate(str)  :指定された日付
     戻り値      
         失敗:
             文字列"failed"
@@ -75,7 +75,7 @@ def taskQueryMany(userID,orderData):
             newList(list):指定日以降の課題リスト
     """
 
-    newList=C6.taskQueryManySub(userID,orderData)
+    newList=C6.taskQueryManySub(userID,orderDate)
     if newList==[[]]:
         return "failed"
     else:
