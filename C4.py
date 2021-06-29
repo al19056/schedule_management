@@ -29,20 +29,17 @@ def taskEdit(userID,due,need,title,taskID):
         need(str)       :課題の必要時間
         title(str)      :課題の名称
         taskID(str)     :課題ID
-    戻り値      
-        失敗:
-            文字列"failed"
-        成功:
-            newTaskID   :更新後の課題ID
+    戻り値      :     
+        newTaskID   :更新後の課題ID
     """
 
     #課題の情報を追加
-    if taskID == None: #追加時はtaskIDが存在しない
+    if taskID == "": #追加時はtaskIDが存在しない
         newTaskID=C6.taskEditSub(userID,due,need,title,taskID)
         return newTaskID
 
     #課題の情報を削除
-    elif due == None: #削除時はdue,need,titleが存在しない
+    elif due == "": #削除時はdue,need,titleが存在しない
         newTaskID=C6.taskEditSub(userID,due,need,title,taskID)
         return newTaskID
 

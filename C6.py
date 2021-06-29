@@ -49,16 +49,12 @@ def taskEditSub(userID,due,need,title,taskID):
         title(str)      :課題の名称
         taskID(str)     :課題ID
 
-    戻り値      
-        失敗:
-            文字列"failed"
-
-        成功:
+    戻り値      :
             newTaskID   :新たな課題のID
     """
 
     #課題の情報を追加
-    if taskID == None: 
+    if taskID == "": 
         newTaskID=str(uuid.uuid4()) #taskIDを乱数を用いて定義
 
         taskConn = sqlite3.connect("db/tasks.db")
@@ -75,7 +71,7 @@ def taskEditSub(userID,due,need,title,taskID):
         return newTaskID
 
     #課題の情報を削除
-    elif due == None: 
+    elif due == "": 
         newTaskID=taskID
 
         taskConn = sqlite3.connect("db/tasks.db")
