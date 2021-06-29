@@ -36,11 +36,7 @@ def planSearch(userIDArg,orderDateArg):
     cur.close()
     planConn.close()
 
-    """
-    if(len(planList)==0): #エラーの場合
-        return "failed"
-    else:
-    """
+
     return planList
 
 
@@ -76,11 +72,8 @@ def planInsert(userIDArg,startArg,endArg,titleArg):
     planConn.close()
 
     
-    if(len(tempList)==0): #エラーの場合
-        return "failed"
-    else:
-    
-        return planIDArg
+
+    return planIDArg
     
 
 
@@ -114,11 +107,7 @@ def planUpdate(userIDArg,startArg,endArg,titleArg,planIDArg):
     planConn.close()
 
     
-    if(len(tempList)==0): #エラーの場合
-        return "failed"
-    else:
-    
-        return planIDArg
+    return planIDArg
 
 
 
@@ -149,11 +138,8 @@ def planDelete(userIDArg,planIDArg):
     planConn.close()
 
     
-    if(len(tempList)==0):
-        return planIDArg
-    else:
     
-        return "failed" #エラーの場合
+    return "failed" #エラーの場合
 
 
 
@@ -185,11 +171,7 @@ def planSearchMany(userIDArg,orderDate):
     cur.close()
     planConn.close()
 
-    """
-    if(len(planListMany)==0): #エラーの場合
-        return "failed"
-    else:
-    """
+
     return planListMany
 
 
@@ -221,9 +203,5 @@ def planSearchAll(userIDArg):
     cur.close()
     planConn.close()
 
-    """
-    if(len(planListAll)==0): #エラーの場合
-        return "failed"
-    else:
-    """
+
     return planListAll
