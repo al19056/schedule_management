@@ -104,7 +104,7 @@ function postPlanEdit(thisObj) {
     var idFind = $(thisObj).parent().parent().find("#planID")
 
     //必要情報の欠如、時間矛盾、同一日内に終わらない予定の時エラーアラート
-    if (start == "" || end == "" || planName == "" || start >= end || start.substr(0, 10) != end.substr(0, 10)) {
+    if (start == "" || end == "" || planName == "" || start >= end || start.substr(0, 10) != end.substr(0, 10) || !("1900-01-01T00:00" < start && start < "2300-01-01T00:00") || !("1900-01-01T00:00" < end && end < "2300-01-01T00:00")) {
       nowDoing = false;
       if (start.substr(0, 10) == end.substr(0, 10)) {
         alert("正しい値を入力してください")

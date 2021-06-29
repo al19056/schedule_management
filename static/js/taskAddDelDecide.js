@@ -101,7 +101,7 @@ function postTaskEdit(thisObj) {
     var idFind = $(thisObj).parent().parent().find("#taskID")
 
     //必要情報の欠如、必要時間が0以下の時エラーアラート
-    if (due == "" || need == "" || taskName == "" || need <= "0") {
+    if (due == "" || need == "" || taskName == "" || need <= "0" || !("1900-01-01T00:00" < due && due < "2300-01-01T00:00")) {
       nowDoing = false;
       alert("正しい値を入力してください")
       return;
