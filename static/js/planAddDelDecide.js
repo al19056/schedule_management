@@ -15,11 +15,11 @@ function planAddForm() {
     '<div class="plan-info" id="plan-info">' +
     '<div class="col-sm-3 text-center">' +
     '<label for="start">開始時刻</label>' +
-    '<input type=datetime-local id="start" name="start" class="start form-control">' +
+    '<input type=datetime-local id="start" name="start" class="start form-control" min="2000-01-01" max="2099-12-31">' +
     '</div>' +
     '<div class="col-sm-3 text-center">' +
     '<label for="end">終了時刻</label>' +
-    '<input type="datetime-local" id="end" name="end" class="end form-control">' +
+    '<input type="datetime-local" id="end" name="end" class="end form-control" min="2000-01-01" max="2099-12-31">' +
     '</div>' +
     '<div class="col-sm-4 text-center">' +
     '<label for="plan-name">予定名</label>' +

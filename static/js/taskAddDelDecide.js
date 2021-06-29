@@ -15,7 +15,7 @@ function taskAddForm() {
     '<div class="task-info" id="task-info">' +
     '<div class="col-sm-3 text-center">' +
     '<label for="due">締切日</label>' +
-    '<input type=datetime-local id="due" name="due" class="due form-control">' +
+    '<input type=datetime-local id="due" name="due" class="due form-control min="2000-01-01" max="2099-12-31"">' +
     '</div>' +
     '<div class="col-sm-3 text-center">' +
     '<label for="need">必要時間</label>' +
