@@ -4,8 +4,6 @@
 ###***Purpose:C6コンポーネント
 #####################################################
 
-
-from app import taskConn
 import sqlite3
 import uuid
 
@@ -26,6 +24,7 @@ def taskQuerySub(userID,orderData):
     """
 
     #課題情報データーベースに登録された課題の検索
+    taskConn = sqlite3.connect("db/tasks.db")
     cur=taskConn.cursor()
     cur.execute('SELECT * FROM tasks WHERE userID=? AND due LIKE ?',[userID,orderDate+'T'+'%'])
     tempList=cur.fetchall()
@@ -38,6 +37,7 @@ def taskQuerySub(userID,orderData):
         newList.append(dict(zip(keys,values)))
     
     cur.close()
+    taskConn.close()
 
     if(len(newList)==0): #リストが存在していなければエラー
         return "failed"
@@ -67,6 +67,7 @@ def taskEditSub(userID,due,need,title,taskID):
     if taskID == None: 
         newTaskID=str(uuid.uuid4()) #taskIDを乱数を用いて定義
 
+        taskConn = sqlite3.connect("db/tasks.db")
         cur=taskConn.cursor()
         cur.execute('INSERT INTO tasks values(?,?,?,?,?)',[userID,due,need,title,newTaskID])
 
@@ -74,6 +75,7 @@ def taskEditSub(userID,due,need,title,taskID):
         tempList=cur.fetchall()
         
         cur.close()
+        taskConn.close()
 
         if(len(tempList)==0): #追加したリストが存在していなければエラー
             return "failed"
@@ -84,6 +86,7 @@ def taskEditSub(userID,due,need,title,taskID):
     elif due == None: 
         newTaskID=taskID
 
+        taskConn = sqlite3.connect("db/tasks.db")
         cur=taskConn.cursor()
         cur.execute('DELETE FROM tasks WHERE userID=? AND taskID=?',[userID,newTaskID])
 
@@ -91,6 +94,7 @@ def taskEditSub(userID,due,need,title,taskID):
         tempList=cur.fetchall()
         
         cur.close()
+        taskConn.close()
 
         if(len(tempList)==0): #削除したリストが存在していればエラー
             return newTaskID
@@ -102,6 +106,7 @@ def taskEditSub(userID,due,need,title,taskID):
     else: 
         newTaskID=taskID
 
+        taskConn = sqlite3.connect("db/tasks.db")
         cur=taskConn.cursor()
         cur.execute('UPDATE tasks SET due=?,need=?,title=? WHERE taskID=?',[due,need,title,newTaskID])
 
@@ -109,6 +114,7 @@ def taskEditSub(userID,due,need,title,taskID):
         tempList=cur.fetchall()
         
         cur.close()
+        taskConn.close()
 
         if(len(tempList)==0): #変更したリストが存在していなければエラー
             return "failed"
@@ -132,6 +138,7 @@ def taskQueryManySub(userID,orderData):
     """
 
     #課題情報データーベースに登録された課題の検索
+    taskConn = sqlite3.connect("db/tasks.db")
     cur=taskConn.cursor()
     cur.execute('SELECT * FROM tasks WHERE userID=? AND due >= ?',[userID,orderDate+'T'+'%'])
     tempList=cur.fetchall()
@@ -144,6 +151,7 @@ def taskQueryManySub(userID,orderData):
         newList.append(dict(zip(keys,values)))
     
     cur.close()
+    taskConn.close()
 
     if(len(newList)==0): #リストが存在していなければエラー
         return "failed"
@@ -167,6 +175,7 @@ def taskQueryAllSub(userID):
     """
 
     #課題情報データーベースに登録された課題の検索
+    taskConn = sqlite3.connect("db/tasks.db")
     cur=taskConn.cursor()
     cur.execute('SELECT * FROM tasks WHERE userID=?',[userID])
     tempList=cur.fetchall()
@@ -179,6 +188,7 @@ def taskQueryAllSub(userID):
         newList.append(dict(zip(keys,values)))
     
     cur.close()
+    taskConn.close()
 
     if(len(newList)==0): #リストが存在していなければエラー
         return "failed"
