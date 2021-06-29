@@ -14,7 +14,7 @@ function taskAddForm() {
   $(
     '<div class="task-info" id="task-info">' +
     '<div class="col-sm-3 text-center">' +
-    '<label for="due">締め切り日</label>' +
+    '<label for="due">締切日</label>' +
     '<input type=datetime-local id="due" name="due" class="due form-control">' +
     '</div>' +
     '<div class="col-sm-3 text-center">' +
