@@ -20,10 +20,8 @@ def taskQuery(userID,orderDate):
     """
 
     newList=C6.taskQuerySub(userID,orderDate)
-    if newList==[[]]:
-        return "failed"
-    else:
-        return newList
+
+    return newList
 
 def taskEdit(userID,due,need,title,taskID):
     """
@@ -76,10 +74,8 @@ def taskQueryMany(userID,orderDate):
     """
 
     newList=C6.taskQueryManySub(userID,orderDate)
-    if newList==[[]]:
-        return "failed"
-    else:
-        return newList
+
+    return newList
 
 def taskQueryAll(userID):
     """
@@ -94,7 +90,5 @@ def taskQueryAll(userID):
     """
     
     newList=C6.taskQueryAllSub(userID)
-    if newList==[[]]:
-        return "failed"
-    else:
-        return newList
+
+    return newList

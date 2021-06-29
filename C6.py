@@ -40,10 +40,7 @@ def taskQuerySub(userID,orderDate):
     cur.close()
     taskConn.close()
 
-    if(len(newList)==0): #リストが存在していなければエラー
-        return "failed"
-    else:
-        return newList
+    return newList
 
 def taskEditSub(userID,due,need,title,taskID):
     """
@@ -160,10 +157,7 @@ def taskQueryManySub(userID,orderDate):
     cur.close()
     taskConn.close()
 
-    if(len(newList)==0): #リストが存在していなければエラー
-        return "failed"
-    else:
-        return newList
+    return newList
 
 
 def taskQueryAllSub(userID):
@@ -198,7 +192,4 @@ def taskQueryAllSub(userID):
     cur.close()
     taskConn.close()
 
-    if(len(newList)==0): #リストが存在していなければエラー
-        return "failed"
-    else:
-        return newList
+    return newList
