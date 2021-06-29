@@ -72,11 +72,7 @@ def taskEditSub(userID,due,need,title,taskID):
         cur.close()
         taskConn.close()
 
-
-        if(len(tempList)==0): #追加したリストが存在していなければエラー
-            return "failed"
-        else:
-            return newTaskID
+        return newTaskID
 
     #課題の情報を削除
     elif due == None: 
@@ -93,11 +89,7 @@ def taskEditSub(userID,due,need,title,taskID):
         cur.close()
         taskConn.close()
 
-        if(len(tempList)==0): #削除したリストが存在していればエラー
-            return newTaskID
-        else:
-            return "failed"
-
+        return newTaskID
 
     #課題の情報を変更
     else: 
@@ -114,11 +106,7 @@ def taskEditSub(userID,due,need,title,taskID):
         cur.close()    
         taskConn.close()
     
-
-        if(len(tempList)==0): #変更したリストが存在していなければエラー
-            return "failed"
-        else:
-            return newTaskID
+        return newTaskID
 
 def taskQueryManySub(userID,orderDate):
     """
