@@ -7,13 +7,13 @@
 import sqlite3
 import uuid
 
-def taskQuerySub(userID,orderData):
+def taskQuerySub(userID,orderDate):
     """
     機能概要    :指定日の課題の情報を検索する.
 
     引数        :
         userID(str)     :ユーザID
-        orderData(str)  :指定された日付
+        orderDate(str)  :指定された日付
 
     戻り値      
         失敗:
@@ -36,7 +36,7 @@ def taskQuerySub(userID,orderData):
         values=[tempList[x][1],tempList[x][2],tempList[x][3],tempList[x][4]]
         newList.append(dict(zip(keys,values)))
 
-    conn.commit()
+    taskConn.commit()
     taskConn.close()
     cur.close()
 
@@ -75,7 +75,7 @@ def taskEditSub(userID,due,need,title,taskID):
         cur.execute('SELECT * FROM tasks WHERE userID=? AND taskID=?',[userID,newTaskID])
         tempList=cur.fetchall()
         
-        conn.commit()
+        taskConn.commit()
         taskConn.close()
         cur.close()
 
@@ -95,7 +95,7 @@ def taskEditSub(userID,due,need,title,taskID):
         cur.execute('SELECT * FROM tasks WHERE userID=? AND taskID=?',[userID,newTaskID])
         tempList=cur.fetchall()
         
-        conn.commit()
+        taskConn.commit()
         taskConn.close()
         cur.close()
 
@@ -116,7 +116,7 @@ def taskEditSub(userID,due,need,title,taskID):
         cur.execute('SELECT * FROM tasks WHERE userID=? AND taskID=?',[userID,newTaskID])
         tempList=cur.fetchall()
         
-        conn.commit()
+        taskConn.commit()
         taskConn.close()
         cur.close()
 
@@ -125,13 +125,13 @@ def taskEditSub(userID,due,need,title,taskID):
         else:
             return newTaskID
 
-def taskQueryManySub(userID,orderData):
+def taskQueryManySub(userID,orderDate):
     """
     機能概要    :指定日以降の課題の情報を検索する.
 
     引数        :
         userID(str)     :ユーザID
-        orderData(str)  :指定された日付
+        orderDate(str)  :指定された日付
 
     戻り値      
         失敗:
@@ -154,7 +154,7 @@ def taskQueryManySub(userID,orderData):
         values=[tempList[x][1],tempList[x][2],tempList[x][3],tempList[x][4]]
         newList.append(dict(zip(keys,values)))
     
-    conn.commit()
+    taskConn.commit()
     taskConn.close()
     cur.close()
 
@@ -192,7 +192,7 @@ def taskQueryAllSub(userID):
         values=[tempList[x][1],tempList[x][2],tempList[x][3],tempList[x][4]]
         newList.append(dict(zip(keys,values)))
     
-    conn.commit()
+    taskConn.commit()
     taskConn.close()
     cur.close()
 
