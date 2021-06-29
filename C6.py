@@ -7,20 +7,16 @@
 import sqlite3
 import uuid
 
-def taskQuerySub(userID,orderData):
+def taskQuerySub(userID,orderDate):
     """
     機能概要    :指定日の課題の情報を検索する.
 
     引数        :
         userID(str)     :ユーザID
-        orderData(str)  :指定された日付
+        orderDate(str)  :指定された日付
 
-    戻り値      
-        失敗:
-            文字列"failed"
-
-        成功:
-            newList(list):指定日の課題リスト
+    戻り値      :
+        newList(list):指定日の課題リスト
     """
 
     #課題情報データーベースに登録された課題の検索
@@ -35,14 +31,12 @@ def taskQuerySub(userID,orderData):
     for x in range(len(tempList)):
         values=[tempList[x][1],tempList[x][2],tempList[x][3],tempList[x][4]]
         newList.append(dict(zip(keys,values)))
-    
+
+    taskConn.commit()
     cur.close()
     taskConn.close()
 
-    if(len(newList)==0): #リストが存在していなければエラー
-        return "failed"
-    else:
-        return newList
+    return newList
 
 def taskEditSub(userID,due,need,title,taskID):
     """
@@ -74,8 +68,10 @@ def taskEditSub(userID,due,need,title,taskID):
         cur.execute('SELECT * FROM tasks WHERE userID=? AND taskID=?',[userID,newTaskID])
         tempList=cur.fetchall()
         
+        taskConn.commit()
         cur.close()
         taskConn.close()
+
 
         if(len(tempList)==0): #追加したリストが存在していなければエラー
             return "failed"
@@ -93,6 +89,7 @@ def taskEditSub(userID,due,need,title,taskID):
         cur.execute('SELECT * FROM tasks WHERE userID=? AND taskID=?',[userID,newTaskID])
         tempList=cur.fetchall()
         
+        taskConn.commit()
         cur.close()
         taskConn.close()
 
@@ -113,28 +110,26 @@ def taskEditSub(userID,due,need,title,taskID):
         cur.execute('SELECT * FROM tasks WHERE userID=? AND taskID=?',[userID,newTaskID])
         tempList=cur.fetchall()
         
-        cur.close()
+        taskConn.commit()
+        cur.close()    
         taskConn.close()
+    
 
         if(len(tempList)==0): #変更したリストが存在していなければエラー
             return "failed"
         else:
             return newTaskID
 
-def taskQueryManySub(userID,orderData):
+def taskQueryManySub(userID,orderDate):
     """
     機能概要    :指定日以降の課題の情報を検索する.
 
     引数        :
         userID(str)     :ユーザID
-        orderData(str)  :指定された日付
+        orderDate(str)  :指定された日付
 
-    戻り値      
-        失敗:
-            文字列"failed"
-
-        成功:
-            newList(list):指定日の課題リスト
+    戻り値      :    
+        newList(list):指定日の課題リスト
     """
 
     #課題情報データーベースに登録された課題の検索
@@ -150,13 +145,11 @@ def taskQueryManySub(userID,orderData):
         values=[tempList[x][1],tempList[x][2],tempList[x][3],tempList[x][4]]
         newList.append(dict(zip(keys,values)))
     
+    taskConn.commit()
     cur.close()
     taskConn.close()
 
-    if(len(newList)==0): #リストが存在していなければエラー
-        return "failed"
-    else:
-        return newList
+    return newList
 
 
 def taskQueryAllSub(userID):
@@ -166,12 +159,8 @@ def taskQueryAllSub(userID):
     引数        :
         userID(str)     :ユーザID
 
-    戻り値      
-        失敗:
-            文字列"failed"
-
-        成功:
-            newList(list):指定日の課題リスト
+    戻り値      :
+        newList(list):指定日の課題リスト
     """
 
     #課題情報データーベースに登録された課題の検索
@@ -187,10 +176,8 @@ def taskQueryAllSub(userID):
         values=[tempList[x][1],tempList[x][2],tempList[x][3],tempList[x][4]]
         newList.append(dict(zip(keys,values)))
     
+    taskConn.commit()
     cur.close()
     taskConn.close()
 
-    if(len(newList)==0): #リストが存在していなければエラー
-        return "failed"
-    else:
-        return newList
+    return newList
