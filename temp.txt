@@ -1,0 +1,94 @@
+@app.route("/home", methods=["GET", "POST"])
+def W2():
+    # 非ログイン時
+    if not "status" in session.keys():
+        return redirect(url_for("W1"))
+    if session["status"] != "True":
+        return redirect(url_for("W1"))
+
+    if request.method == "POST":
+        print("\n\n\nPOST\n\n\n")
+
+        # 前月・次月・日付ボタン押下(遷移先月のデータを入手してレンダリング)
+        if request.get_data()!=b'':
+            resStr = request.get_data()  # postされたバイト文字列
+            resStr = resStr.decode()  # バイト文字列を文字列に変換
+            print(resStr)
+            # 前月
+            if resStr == "prev":
+                pass
+            # 次月
+            elif resStr == "next":
+                pass
+            # 日付押下
+            else:
+                return redirect(url_for("W3", date=resStr))
+
+        # ボタン押下
+        else:
+            # 課題追加ボタン押下
+            if request.form.get("addTask"):
+                return redirect(url_for("W6"))
+            # 睡眠+休憩時間を入力し更新ボタン押下
+            elif request.form.get("update"):
+                mustDoList = C1.mustDo(
+                    session["userID"],
+                    datetime.datetime.now().isoformat()[:10],
+                    request.form.get("restTime"),
+                )  # mustDo　更新
+                return render_template("W2.html", mustDoList=mustDoList)
+
+
+
+    if request.method == "GET":
+        print("\n\n\nGET\n\n\n")
+        defaultRestTime = 13  # 初期設定(htmlにも記載)
+        return render_template(
+            "W2.html",
+            mustDoList=C1.mustDo(
+                session["userID"],
+                datetime.datetime.now().isoformat()[:10],
+                defaultRestTime,
+            ),
+        )
+
+
+@app.route("/homeDetails/<date>", methods=["GET", "POST"])
+def W3(date):
+    # 非ログイン時
+    if not "status" in session.keys():
+        return redirect(url_for("W1"))
+    if session["status"] != "True":
+        return redirect(url_for("W1"))
+
+    # 前月・次月・日付ボタン押下(遷移先月のデータを入手してレンダリング)
+    if request.get_data:
+        resStr = request.get_data()  # postされたバイト文字列
+        resStr = resStr.decode()  # バイト文字列を文字列に変換
+
+        # 前月
+        if resStr == "prev":
+            pass
+        # 次月
+        elif resStr == "next":
+            pass
+        # 日付押下
+        else:
+            redirect(url_for("W3", date=resStr))
+
+    # 編集・戻るボタン押下
+    if request.form:
+        # 予定編集ボタン押下
+        if request.form.get("planEdit"):
+            return redirect(url_for("W4", date=date))
+        # 課題編集ボタン押下
+        elif request.form.get("taskEdit"):
+            return redirect(url_for("W5", date=date))
+        # 戻るボタン押下
+        elif request.form.get("back"):
+            return redirect(url_for("W2"))
+
+    # 通常表示
+    planList = C1.planQuery(session["userID"], date, "month")
+    taskList = C1.taskQuery(session["userID"], date, "month")
+    return render_template("W3.html", planList=planList, taskList=taskList)
